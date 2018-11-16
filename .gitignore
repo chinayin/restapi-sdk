@@ -49,7 +49,7 @@ buildNumber.properties
 
 # Composer #
 /vendor
-.composer.lock
+composer.lock
 
 # PhpCsFixer #
 .php_cs.cache
