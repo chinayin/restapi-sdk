@@ -1,0 +1,52 @@
+{
+  "name": "chinayin/restapi-sdk",
+  "description": "restapi sdk",
+  "type": "library",
+  "keywords": [
+    "restapi",
+    "sdk"
+  ],
+  "homepage": "http://github.com/chinayin/restapi-sdk",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "chinayin",
+      "email": "whereismoney@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "guzzlehttp/guzzle": "^6.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.0",
+    "phploc/phploc": "^4.0",
+    "sebastian/phpcpd": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "RestAPI\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-ci": "vendor/bin/phpunit --coverage-text",
+    "lint": "find . -type d \\( -path ./vendor -o -path ./extend -o -path ./thinkphp \\) -prune -o -type f -name \\*.php -exec php -l {} \\;",
+    "phpmetrics": "vendor/bin/phpmetrics --exclude=vendor,thinkphp,runtime --report-html=phpmetrics ./",
+    "phploc": "vendor/bin/phploc --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./",
+    "phpcpd": "vendor/bin/phpcpd --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./"
+  }
+}
