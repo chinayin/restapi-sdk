@@ -25,12 +25,12 @@
   },
   "autoload": {
     "psr-4": {
-      "RestAPI\\": "src/"
+      "RestAPI\\": "src/RestAPI/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/"
+      "RestAPI\\Tests\\": "tests/"
     }
   },
   "config": {
