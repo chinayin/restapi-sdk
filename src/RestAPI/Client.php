@@ -305,7 +305,14 @@ class Client {
     ) {
         self::assertInitialized();
         $url = self::getAPIEndPoint();
-        $url .= $path;
+        // 强制/开头的path
+        if (0 !== strpos($path, '/')) {
+            throw new \RuntimeException(
+            "${path} is not start with /",
+            -1
+        );
+        }
+        $url .= '/'.ltrim($path, '/');
 
         $defaultHeaders = self::buildHeaders($useMasterKey);
         if (empty($headers)) {

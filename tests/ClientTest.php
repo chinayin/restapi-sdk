@@ -46,4 +46,15 @@ final class ClientTest extends TestCase {
         $data = Client::request('GET', '/date', null);
         $this->assertSame($data['__type'], 'Date');
     }
+
+    public function test_startWith() {
+        foreach (['/aaa/bbb', 'ccc/ddd'] as $path) {
+            if (0 !== strpos($path, '/')) {
+                throw new \RuntimeException(
+                    "${path} is not start with /",
+                    -1
+                );
+            }
+        }
+    }
 }
