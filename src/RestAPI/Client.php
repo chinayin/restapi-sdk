@@ -16,7 +16,7 @@ class Client {
     /**
      * Client version.
      */
-    const VERSION = '0.1.4';
+    const VERSION = '0.1.5';
 
     /**
      * Is in production or not.
@@ -657,7 +657,7 @@ class Client {
 
         return base64_encode(openssl_encrypt(
             http_build_query($data),
-            'AES-256-CFB',
+            'AES-256-CBC',
             self::$secretKey,
             OPENSSL_RAW_DATA,
             $iv
