@@ -405,7 +405,7 @@ class RestServiceClient {
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
 
-            throw new CloudException("{$code} {$data['message']}", $code);
+            throw new CloudException("{$data['message']}", $code);
         }
 
         return $data;
