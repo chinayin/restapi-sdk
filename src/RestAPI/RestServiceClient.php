@@ -296,7 +296,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return mixed
      */
@@ -398,14 +398,14 @@ class RestServiceClient {
             );
         }
         if (false !== strpos($respType, 'text/html')) {
-            throw new CloudException('Bad request', -1);
+            throw new RestAPIException('Bad request', -1);
         }
 
         $data = json_decode($resp, true);
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
 
-            throw new CloudException("{$data['message']}", $code);
+            throw new RestAPIException("{$data['message']}", $code);
         }
 
         return $data;
@@ -423,7 +423,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return array
      *
@@ -456,7 +456,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return array
      *
@@ -489,7 +489,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return array
      *
@@ -520,7 +520,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return array
      *
@@ -550,7 +550,7 @@ class RestServiceClient {
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws CloudException
+     * @throws RestAPIException
      *
      * @return array
      *
