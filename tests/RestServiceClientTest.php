@@ -13,7 +13,8 @@ final class RestServiceClientTest extends TestCase {
         Client::initialize(
             getenv('RESTAPI_SYS_ID'),
             getenv('RESTAPI_SYS_KEY'),
-            'DEV'
+//            'DEV'
+            'TESTING'
         );
         Client::useProduction(false);
         Client::useMasterKey(false);
@@ -57,5 +58,19 @@ final class RestServiceClientTest extends TestCase {
                 );
             }
         }
+    }
+
+    public function test_upload() {
+        $data = Client::upload(
+            '/service/upload/file',
+            '/Users/tian/Desktop/abc.txt',
+            [
+                'app_id' => 1,
+                'cust_id' => 10,
+                'type_id' => 2,
+            ]
+        );
+        var_dump($data);
+        $this->assertTrue(true);
     }
 }

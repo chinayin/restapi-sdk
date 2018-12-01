@@ -5,6 +5,7 @@ namespace RestAPI;
 use RestAPI\RouterService as Router;
 use RestAPI\Storage\IStorage;
 use RestAPI\Storage\SessionStorage;
+use RestAPI\Uploader\SimpleUploader;
 
 /**
  * Client interfacing with REST API.
@@ -17,7 +18,7 @@ class RestServiceClient {
     /**
      * Client version.
      */
-    const VERSION = '0.2.0';
+    const VERSION = '0.2.1';
 
     /**
      * Is in production or not.
@@ -580,6 +581,73 @@ class RestServiceClient {
         }
 
         return $response;
+    }
+
+    /**
+     * Issue UPLOAD request to RestAPI.
+     *
+     * @param       $path
+     *                            Request path (without version string)
+     * @param array $headers
+     *                            Optional headers
+     * @param null  $useMasterKey
+     *                            Use master key or not, optional
+     * @param mixed $filepath
+     * @param mixed $params
+     *
+     * @throws RestAPIException
+     *
+     * @return array
+     *
+     * @see self::request()
+     */
+    public static function upload(
+        $path,
+        $filepath,
+        $params = [],
+        $headers = [],
+        $useMasterKey = null
+    ) {
+        self::assertInitialized();
+        $url = self::getAPIEndPoint();
+        // 强制/开头的path
+        if (0 !== strpos($path, '/')) {
+            throw new \RuntimeException(
+                "${path} is not start with /",
+                -1
+            );
+        }
+        $url .= '/'.ltrim($path, '/');
+
+        $defaultHeaders = self::buildHeaders($useMasterKey);
+        if (empty($headers)) {
+            $headers = $defaultHeaders;
+        } else {
+            $headers = array_merge($defaultHeaders, $headers);
+        }
+        $data = [];
+
+        try {
+            $uploader = SimpleUploader::createUploader('uhz');
+            $uploader->initialize($url, self::randomString(10));
+            // 判断是否存在
+            if (defined('CLIENT_APP_ID')) {
+                $params['app_id'] = CLIENT_APP_ID;
+            }
+            // 设置参数
+            $uploader->setUploadParams($params);
+            $data = $uploader->uploadWithLocalFile($filepath, 'file');
+        } catch (\Exception $ex) {
+            throw new RestAPIException($ex->getMessage(), -1);
+        }
+
+        if (isset($data['error_code']) && !empty($data['error_code'])) {
+            $code = isset($data['error_code']) ? $data['error_code'] : -1;
+
+            throw new RestAPIException("{$data['message']}", $code);
+        }
+
+        return $data;
     }
 
     /**
