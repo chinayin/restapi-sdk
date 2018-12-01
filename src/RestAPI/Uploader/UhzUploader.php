@@ -92,15 +92,7 @@ class UhzUploader extends SimpleUploader {
             );
         }
 
-        $data = json_decode($resp, true);
-        if (isset($data['error'])) {
-            $code = isset($data['code']) ? $data['code'] : 1;
-
-            throw new \RuntimeException("Upload to UhzFileService ({$url}) failed: ".
-                                        "{$code} {$data['error']}", $code);
-        }
-
-        return $data;
+        return json_decode($resp, true);
     }
 
     public function setUploadParams(array $params) {

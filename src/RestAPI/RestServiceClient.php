@@ -625,10 +625,7 @@ class RestServiceClient {
         } else {
             $headers = array_merge($defaultHeaders, $headers);
         }
-
-//        var_dump($url);
-//        var_dump($headers);
-//        var_dump($params);
+        $data = [];
 
         try {
             $uploader = SimpleUploader::createUploader('uhz');
@@ -639,90 +636,11 @@ class RestServiceClient {
             }
             // 设置参数
             $uploader->setUploadParams($params);
-            $uploader->uploadWithLocalFile($filepath, 'file');
+            $data = $uploader->uploadWithLocalFile($filepath, 'file');
         } catch (\Exception $ex) {
-            var_dump($ex->getMessage()) ;
+            throw new RestAPIException($ex->getMessage(), -1);
         }
 
-        return true;
-        if (false !== strpos($headers['Content-Type'], '/json')) {
-            $json = json_encode($data);
-        }
-
-        // Build headers list in HTTP format
-        $headersList = array_map(
-            function ($key, $val) { return "${key}: ${val}"; },
-            array_keys($headers),
-            $headers
-        );
-
-        $req = curl_init($url);
-        curl_setopt($req, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($req, CURLOPT_HTTPHEADER, $headersList);
-        curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($req, CURLOPT_TIMEOUT, self::$apiTimeout);
-        // curl_setopt($req, CURLINFO_HEADER_OUT, true);
-        // curl_setopt($req, CURLOPT_HEADER, true);
-        curl_setopt($req, CURLOPT_ENCODING, '');
-        switch ($method) {
-            case 'GET':
-                if ($data) {
-                    // append GET data as query string
-                    $url .= '?'.http_build_query($data);
-                    curl_setopt($req, CURLOPT_URL, $url);
-                }
-
-                break;
-            case 'POST':
-                curl_setopt($req, CURLOPT_POST, 1);
-                curl_setopt($req, CURLOPT_POSTFIELDS, $json);
-
-                break;
-            case 'PUT':
-                curl_setopt($req, CURLOPT_POSTFIELDS, $json);
-                curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
-            // no break
-            case 'DELETE':
-                curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
-
-                break;
-            default:
-                break;
-        }
-        $reqId = rand(100, 999);
-        if (self::$debugMode) {
-            error_log("[DEBUG] HEADERS {$reqId}:".json_encode($headersList));
-            error_log("[DEBUG] REQUEST {$reqId}: {$method} {$url} {$json}");
-        }
-        // list($headers, $resp) = explode("\r\n\r\n", curl_exec($req), 2);
-        $resp = curl_exec($req);
-        $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
-        $respType = curl_getinfo($req, CURLINFO_CONTENT_TYPE);
-        $error = curl_error($req);
-        $errno = curl_errno($req);
-        curl_close($req);
-
-        if (self::$debugMode) {
-            error_log("[DEBUG] RESPONSE {$reqId}: {$resp}");
-        }
-
-        /* type of error:
-          *  - curl connection error
-          *  - http status error 4xx, 5xx
-          *  - rest api error
-          */
-        if ($errno > 0) {
-            throw new \RuntimeException(
-                "CURL connection (${url}) error: ".
-                "${errno} ${error}",
-                $errno
-            );
-        }
-        if (false !== strpos($respType, 'text/html')) {
-            throw new RestAPIException('Bad request', -1);
-        }
-
-        $data = json_decode($resp, true);
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
 
