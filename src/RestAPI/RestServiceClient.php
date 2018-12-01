@@ -5,6 +5,7 @@ namespace RestAPI;
 use RestAPI\RouterService as Router;
 use RestAPI\Storage\IStorage;
 use RestAPI\Storage\SessionStorage;
+use RestAPI\Uploader\SimpleUploader;
 
 /**
  * Client interfacing with REST API.
@@ -580,6 +581,155 @@ class RestServiceClient {
         }
 
         return $response;
+    }
+
+    /**
+     * Issue UPLOAD request to RestAPI.
+     *
+     * @param       $path
+     *                            Request path (without version string)
+     * @param array $headers
+     *                            Optional headers
+     * @param null  $useMasterKey
+     *                            Use master key or not, optional
+     * @param mixed $filepath
+     * @param mixed $params
+     *
+     * @throws RestAPIException
+     *
+     * @return array
+     *
+     * @see self::request()
+     */
+    public static function upload(
+        $path,
+        $filepath,
+        $params = [],
+        $headers = [],
+        $useMasterKey = null
+    ) {
+        self::assertInitialized();
+        $url = self::getAPIEndPoint();
+        // 强制/开头的path
+        if (0 !== strpos($path, '/')) {
+            throw new \RuntimeException(
+                "${path} is not start with /",
+                -1
+            );
+        }
+        $url .= '/'.ltrim($path, '/');
+
+        $defaultHeaders = self::buildHeaders($useMasterKey);
+        if (empty($headers)) {
+            $headers = $defaultHeaders;
+        } else {
+            $headers = array_merge($defaultHeaders, $headers);
+        }
+
+//        var_dump($url);
+//        var_dump($headers);
+//        var_dump($params);
+
+        try {
+            $uploader = SimpleUploader::createUploader('uhz');
+            $uploader->initialize($url, self::randomString(10));
+            // 判断是否存在
+            if (defined('CLIENT_APP_ID')) {
+                $params['app_id'] = CLIENT_APP_ID;
+            }
+            // 设置参数
+            $uploader->setUploadParams($params);
+            $uploader->uploadWithLocalFile($filepath, 'file');
+        } catch (\Exception $ex) {
+            var_dump($ex->getMessage()) ;
+        }
+
+        return true;
+        if (false !== strpos($headers['Content-Type'], '/json')) {
+            $json = json_encode($data);
+        }
+
+        // Build headers list in HTTP format
+        $headersList = array_map(
+            function ($key, $val) { return "${key}: ${val}"; },
+            array_keys($headers),
+            $headers
+        );
+
+        $req = curl_init($url);
+        curl_setopt($req, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($req, CURLOPT_HTTPHEADER, $headersList);
+        curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($req, CURLOPT_TIMEOUT, self::$apiTimeout);
+        // curl_setopt($req, CURLINFO_HEADER_OUT, true);
+        // curl_setopt($req, CURLOPT_HEADER, true);
+        curl_setopt($req, CURLOPT_ENCODING, '');
+        switch ($method) {
+            case 'GET':
+                if ($data) {
+                    // append GET data as query string
+                    $url .= '?'.http_build_query($data);
+                    curl_setopt($req, CURLOPT_URL, $url);
+                }
+
+                break;
+            case 'POST':
+                curl_setopt($req, CURLOPT_POST, 1);
+                curl_setopt($req, CURLOPT_POSTFIELDS, $json);
+
+                break;
+            case 'PUT':
+                curl_setopt($req, CURLOPT_POSTFIELDS, $json);
+                curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
+            // no break
+            case 'DELETE':
+                curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
+
+                break;
+            default:
+                break;
+        }
+        $reqId = rand(100, 999);
+        if (self::$debugMode) {
+            error_log("[DEBUG] HEADERS {$reqId}:".json_encode($headersList));
+            error_log("[DEBUG] REQUEST {$reqId}: {$method} {$url} {$json}");
+        }
+        // list($headers, $resp) = explode("\r\n\r\n", curl_exec($req), 2);
+        $resp = curl_exec($req);
+        $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
+        $respType = curl_getinfo($req, CURLINFO_CONTENT_TYPE);
+        $error = curl_error($req);
+        $errno = curl_errno($req);
+        curl_close($req);
+
+        if (self::$debugMode) {
+            error_log("[DEBUG] RESPONSE {$reqId}: {$resp}");
+        }
+
+        /* type of error:
+          *  - curl connection error
+          *  - http status error 4xx, 5xx
+          *  - rest api error
+          */
+        if ($errno > 0) {
+            throw new \RuntimeException(
+                "CURL connection (${url}) error: ".
+                "${errno} ${error}",
+                $errno
+            );
+        }
+        if (false !== strpos($respType, 'text/html')) {
+            throw new RestAPIException('Bad request', -1);
+        }
+
+        $data = json_decode($resp, true);
+        if (isset($data['error_code']) && !empty($data['error_code'])) {
+            $code = isset($data['error_code']) ? $data['error_code'] : -1;
+
+            throw new RestAPIException("{$data['message']}", $code);
+        }
+
+        return $data;
     }
 
     /**
