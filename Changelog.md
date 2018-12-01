@@ -1,3 +1,7 @@
+0.2.1 发布日期：2018-12-01
+----
+* 增加RestServiceClient::upload支持文件上传
+
 0.2.0 发布日期：2018-11-23
 ----
 * 支持RestServiceClient调用内部服务
