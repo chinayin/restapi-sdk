@@ -9,21 +9,18 @@ class Router {
     private static $INSTANCES;
     private $sysId;
     private $region;
-    private $routeCache;
 
     private static $DEFAULT_REGION_ROUTE = [
+        Region::DEV => 'ssoapi.uhouzz.xyz',
+        Region::TESTING => 'testssoapi.uhomes.com',
         Region::CN => 'ssoapi.uhomes.com',
         Region::HK => 'hk-ssoapi.uhomes.com',
         Region::US => 'us-ssoapi.uhomes.com',
     ];
 
-    private static $DEFAULT_REGION_ROUTE_TESTING = [
-        Region::CN => 'testssoapi.uhomes.com',
-        Region::HK => 'hk-testssoapi.uhomes.com',
-        Region::US => 'us-testssoapi.uhomes.com',
-    ];
-
     private static $DEFAULT_REGION_IV = [
+        Region::DEV => 'uhomescomtianlei',
+        Region::TESTING => 'uhomescomtianlei',
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
@@ -36,7 +33,6 @@ class Router {
             $region = Region::CN;
         }
         $this->setRegion($region);
-        $this->routeCache = RouteCache::create($sysId);
     }
 
     /**
@@ -80,22 +76,7 @@ class Router {
      */
     public function getRoute($server_key) {
         $this->validate_server_key($server_key);
-        $routes = null;
-        //TODO
-        if (false) {
-            $routes = $this->routeCache->read();
-            if (isset($routes[$server_key])) {
-                return $routes[$server_key];
-            }
-        }
-//        $routes = $this->getRoutes();
-        //TODO
-        if (!$routes) {
-            $routes = $this->getDefaultRoutes();
-        }
-        if (false) {
-            $this->routeCache->write($routes);
-        }
+        $routes = $this->getDefaultRoutes();
 
         return isset($routes[$server_key]) ? $routes[$server_key] : null;
     }
@@ -103,7 +84,7 @@ class Router {
     private function validate_server_key($server_key) {
         $routes = $this->getDefaultRoutes();
         if (!isset($routes[$server_key])) {
-            throw new \IllegalArgumentException('Invalid server key.');
+            throw new \InvalidArgumentException('Invalid server key.');
         }
     }
 
@@ -111,11 +92,7 @@ class Router {
      * Fallback default routes, if app router not available.
      */
     private function getDefaultRoutes() {
-        if (Client::$isProduction) {
-            $host = self::$DEFAULT_REGION_ROUTE[$this->region];
-        } else {
-            $host = self::$DEFAULT_REGION_ROUTE_TESTING[$this->region];
-        }
+        $host = self::$DEFAULT_REGION_ROUTE[$this->region];
         $iv = self::$DEFAULT_REGION_IV[$this->region];
 
         return [
