@@ -15,9 +15,17 @@ final class ClientTest extends TestCase {
             getenv('RESTAPI_SYS_KEY'),
             getenv('RESTAPI_SYS_MASTER_KEY')
         );
-        Client::useProduction(false);
+//        Client::useProduction(false);
         Client::useMasterKey(false);
         Client::setDebug(true);
+    }
+
+    public function testAPIRegion() {
+        var_dump(Client::getAPIEndPoint());
+        Client::useRegion('DEV');
+        var_dump(Client::getAPIEndPoint());
+        Client::useRegion('TESTING');
+        var_dump(Client::getAPIEndPoint());
     }
 
     public function testAPIEndPoint() {

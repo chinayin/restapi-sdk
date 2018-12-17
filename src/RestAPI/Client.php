@@ -16,7 +16,7 @@ class Client {
     /**
      * Client version.
      */
-    const VERSION = '0.1.5';
+    const VERSION = '0.2.2';
 
     /**
      * Is in production or not.
@@ -124,10 +124,11 @@ class Client {
         self::$accessToken = $accessToken;
 
         self::$defaultHeaders = [
-            'X-Rest-Sysid' => self::$sysId,
             'Content-Type' => 'application/json;charset=utf-8',
             'Accept-Encoding' => 'gzip, deflate',
             'User-Agent' => self::getVersionString(),
+            'X-Rest-Sysid' => self::$sysId,
+            'X-Rest-Client' => self::VERSION,
         ];
 
         // Use session storage by default
@@ -144,7 +145,7 @@ class Client {
      * @return string
      */
     public static function getVersionString() {
-        return 'RESTAPI SDK '.self::VERSION;
+        return 'RESTAPI-SDK/'.self::VERSION;
     }
 
     /**
