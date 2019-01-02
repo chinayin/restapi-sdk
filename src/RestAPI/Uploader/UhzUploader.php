@@ -14,6 +14,7 @@ class UhzUploader extends SimpleUploader {
     private $cust_id;
     private $user_id;
     private $type_id;
+    private $post_params = [];
 
     public function crc32Data($data) {
         $hex = hash('crc32b', $data);
@@ -58,7 +59,7 @@ class UhzUploader extends SimpleUploader {
             'name' => $key,
             'mimeType' => $mimeType,
             'content' => $content,
-        ], $params, $boundary);
+        ], array_merge($params,$this->post_params), $boundary);
 
         $headers[] = 'User-Agent: '.$this->userAgent;
         $headers[] = 'Content-Type: multipart/form-data;'.
@@ -96,10 +97,12 @@ class UhzUploader extends SimpleUploader {
     }
 
     public function setUploadParams(array $params) {
-        isset($params['app_id']) && $this->setAppId((int) $params['app_id']);
-        isset($params['type_id']) && $this->setTypeId((int) $params['type_id']);
-        isset($params['cust_id']) && $this->setCustId((int) $params['cust_id']);
-        isset($params['user_id']) && $this->setUserId((int) $params['user_id']);
+
+        if(isset($params['app_id'])){$this->setAppId((int) $params['app_id']);unset($params['app_id']);}
+        if(isset($params['type_id'])){$this->setTypeId((int) $params['type_id']);unset($params['type_id']);}
+        if(isset($params['cust_id'])){$this->setCustId((int) $params['cust_id']);unset($params['cust_id']);}
+        if(isset($params['user_id'])){$this->setUserId((int) $params['user_id']);unset($params['user_id']);}
+        empty($params) || $this->post_params = $params;
 
         return $this;
     }
