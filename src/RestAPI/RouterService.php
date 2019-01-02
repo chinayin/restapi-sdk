@@ -13,6 +13,7 @@ class RouterService {
     private static $DEFAULT_REGION_ROUTE = [
         Region::DEV => 'srv.uhouzz.xyz',
         Region::TESTING => 'testapi.uhomes.com/srv',
+        Region::PERVIEW => 'api.uhomes.com/srvpreview',
         Region::CN => 'api.uhomes.com/srv',
         Region::HK => 'hk-api.uhomes.com',
         Region::US => 'us-api.uhomes.com',
