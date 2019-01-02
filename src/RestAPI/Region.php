@@ -7,11 +7,13 @@ abstract class Region {
     const DEV = 0;
     // 测试环境
     const TESTING = 1;
+    // 预上线环境
+    const PERVIEW = 2;
 
     // 地域
-    const CN = 2;
-    const HK = 3;
-    const US = 4;
+    const CN = 11;
+    const HK = 12;
+    const US = 13;
 
     /**
      * Create region from name, such as `CN`, `HK`.
