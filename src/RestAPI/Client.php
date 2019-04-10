@@ -7,16 +7,16 @@ use RestAPI\Storage\SessionStorage;
 
 /**
  * Client interfacing with REST API.
- *
  * The client is responsible for sending request to API, and parsing
  * the response into objects in PHP. There are also utility functions
  * such as `::randomFloat` to generate a random float number.
  */
-class Client {
+class Client
+{
     /**
      * Client version.
      */
-    const VERSION = '0.2.2';
+    const VERSION = '0.2.5';
 
     /**
      * Is in production or not.
@@ -34,7 +34,6 @@ class Client {
 
     /**
      * API Timeout.
-     *
      * Default to 15 seconds
      *
      * @var int
@@ -118,7 +117,8 @@ class Client {
      * @param string $secretKey   Application key
      * @param string $accessToken Application accesstoken
      */
-    public static function initialize($sysId, $secretKey, $accessToken) {
+    public static function initialize($sysId, $secretKey, $accessToken)
+    {
         self::$sysId = $sysId;
         self::$secretKey = $secretKey;
         self::$accessToken = $accessToken;
@@ -144,18 +144,19 @@ class Client {
      *
      * @return string
      */
-    public static function getVersionString() {
-        return 'RESTAPI-SDK/'.self::VERSION;
+    public static function getVersionString()
+    {
+        return 'RESTAPI-SDK/' . self::VERSION;
     }
 
     /**
      * Set API region.
-     *
      * See `RestAPI\Region` for available regions.
      *
      * @param mixed $region
      */
-    public static function useRegion($region) {
+    public static function useRegion($region)
+    {
         self::assertInitialized();
         Router::getInstance(self::$sysId)->setRegion($region);
     }
@@ -165,18 +166,19 @@ class Client {
      *
      * @param bool $flag Default false
      */
-    public static function useProduction($flag) {
+    public static function useProduction($flag)
+    {
         self::$isProduction = $flag ? true : false;
     }
 
     /**
      * Set debug mode.
-     *
      * Enable debug mode to log request params and response.
      *
      * @param bool $flag Default false
      */
-    public static function setDebug($flag) {
+    public static function setDebug($flag)
+    {
         self::$debugMode = $flag ? true : false;
     }
 
@@ -185,19 +187,20 @@ class Client {
      *
      * @param bool $flag
      */
-    public static function useMasterKey($flag) {
+    public static function useMasterKey($flag)
+    {
         self::$useMasterKey = $flag ? true : false;
     }
 
     /**
      * Set server url.
-     *
      * Explicitly set server url with which this client will communicate.
      * Url shall be in the form of: `https://api.xxxx.cn` .
      *
      * @param string $url
      */
-    public static function setServerUrl($url) {
+    public static function setServerUrl($url)
+    {
         self::$serverUrl = rtrim($url, '/');
     }
 
@@ -206,7 +209,8 @@ class Client {
      *
      * @param string $clientIp
      */
-    public static function setClientIp($clientIp) {
+    public static function setClientIp($clientIp)
+    {
         self::$clientIp = $clientIp;
     }
 
@@ -215,7 +219,8 @@ class Client {
      *
      * @param $accessToken
      */
-    public static function setAccessToken($accessToken) {
+    public static function setAccessToken($accessToken)
+    {
         self::$accessToken = $accessToken;
     }
 
@@ -224,28 +229,29 @@ class Client {
      *
      * @param $sysMasterKey
      */
-    public static function setSysMasterKey($sysMasterKey) {
+    public static function setSysMasterKey($sysMasterKey)
+    {
         self::$sysMasterKey = $sysMasterKey;
     }
 
     /**
      * Get API Endpoint.
-     *
      * The returned endpoint will include version string.
      * For example: https://api.xxxx.cn/1.1 .
      *
      * @return string
      */
-    public static function getAPIEndPoint() {
+    public static function getAPIEndPoint()
+    {
         if ($url = self::$serverUrl) {
-            return $url.'/'.self::$apiVersion;
+            return $url . '/' . self::$apiVersion;
         }
         if ($url = getenv('RESTAPI_API_SERVER')) {
-            return $url.'/'.self::$apiVersion;
+            return $url . '/' . self::$apiVersion;
         }
         $host = Router::getInstance(self::$sysId)->getRoute(Router::API_SERVER_KEY);
 
-        return "https://{$host}/".self::$apiVersion;
+        return "https://{$host}/" . self::$apiVersion;
     }
 
     /**
@@ -255,7 +261,8 @@ class Client {
      *
      * @return array
      */
-    public static function buildHeaders($useMasterKey) {
+    public static function buildHeaders($useMasterKey)
+    {
         if (null === $useMasterKey) {
             $useMasterKey = self::$useMasterKey;
         }
@@ -274,11 +281,9 @@ class Client {
 
     /**
      * Issue request to RestAPI.
-     *
      * The data is passing in as an associative array, which will be encoded
      * into JSON if the content-type header is "application/json", or
      * be appended to url as query string if it's GET request.
-     *
      * The optional headers do have higher precedence, if provided it
      * will overwrite the items in default headers.
      *
@@ -294,7 +299,6 @@ class Client {
      *                            Use master key or not
      *
      * @throws CloudException
-     *
      * @return mixed
      */
     public static function request(
@@ -309,11 +313,11 @@ class Client {
         // 强制/开头的path
         if (0 !== strpos($path, '/')) {
             throw new \RuntimeException(
-            "${path} is not start with /",
-            -1
-        );
+                "${path} is not start with /",
+                -1
+            );
         }
-        $url .= '/'.ltrim($path, '/');
+        $url .= '/' . ltrim($path, '/');
 
         $defaultHeaders = self::buildHeaders($useMasterKey);
         if (empty($headers)) {
@@ -328,8 +332,8 @@ class Client {
         // Build headers list in HTTP format
         $headersList = array_map(
             function ($key, $val) { return "${key}: ${val}"; },
-                                 array_keys($headers),
-                                 $headers
+            array_keys($headers),
+            $headers
         );
 
         $req = curl_init($url);
@@ -344,7 +348,7 @@ class Client {
             case 'GET':
                 if ($data) {
                     // append GET data as query string
-                    $url .= '?'.http_build_query($data);
+                    $url .= '?' . http_build_query($data);
                     curl_setopt($req, CURLOPT_URL, $url);
                 }
 
@@ -357,7 +361,7 @@ class Client {
             case 'PUT':
                 curl_setopt($req, CURLOPT_POSTFIELDS, $json);
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
-                // no break
+            // no break
             case 'DELETE':
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -367,7 +371,7 @@ class Client {
         }
         $reqId = rand(100, 999);
         if (self::$debugMode) {
-            error_log("[DEBUG] HEADERS {$reqId}:".json_encode($headersList));
+            error_log("[DEBUG] HEADERS {$reqId}:" . json_encode($headersList));
             error_log("[DEBUG] REQUEST {$reqId}: {$method} {$url} {$json}");
         }
         // list($headers, $resp) = explode("\r\n\r\n", curl_exec($req), 2);
@@ -389,9 +393,9 @@ class Client {
           */
         if ($errno > 0) {
             throw new \RuntimeException(
-                "CURL connection (${url}) error: ".
-                                        "${errno} ${error}",
-                                        $errno
+                "CURL connection (${url}) error: " .
+                "${errno} ${error}",
+                $errno
             );
         }
         if (false !== strpos($respType, 'text/html')) {
@@ -421,9 +425,7 @@ class Client {
      *                            Use master key or not, optional
      *
      * @throws CloudException
-     *
      * @return array
-     *
      * @see self::request()
      */
     public static function get(
@@ -454,9 +456,7 @@ class Client {
      *                            Use master key or not, optional
      *
      * @throws CloudException
-     *
      * @return array
-     *
      * @see self::request()
      */
     public static function post(
@@ -487,9 +487,7 @@ class Client {
      *                            Use master key or not, optional
      *
      * @throws CloudException
-     *
      * @return array
-     *
      * @see self::request()
      */
     public static function put(
@@ -518,9 +516,7 @@ class Client {
      *                            Use master key or not, optional
      *
      * @throws CloudException
-     *
      * @return array
-     *
      * @see self::request()
      */
     public static function delete(
@@ -548,9 +544,7 @@ class Client {
      *                            Use master key or not, optional
      *
      * @throws CloudException
-     *
      * @return array
-     *
      * @see self::request()
      */
     public static function batch(
@@ -560,9 +554,9 @@ class Client {
     ) {
         $response = self::post(
             '/batch',
-             ['requests' => $requests],
-             $headers,
-             $useMasterKey
+            ['requests' => $requests],
+            $headers,
+            $useMasterKey
         );
 
         $batchRequestError = new BatchRequestError();
@@ -586,13 +580,14 @@ class Client {
      *
      * @return string
      */
-    public static function formatDate($date) {
+    public static function formatDate($date)
+    {
         $utc = clone $date;
         $utc->setTimezone(new \DateTimezone('UTC'));
         $iso = $utc->format('Y-m-d\\TH:i:s.u');
         // Milliseconds precision is required for server to correctly parse time,
         // thus we have to chop off last 3 microseconds to milliseconds.
-        return substr($iso, 0, 23).'Z';
+        return substr($iso, 0, 23) . 'Z';
     }
 
     /**
@@ -600,18 +595,19 @@ class Client {
      *
      * @return IStorage
      */
-    public static function getStorage() {
+    public static function getStorage()
+    {
         return self::$storage;
     }
 
     /**
      * Set storage.
-     *
      * It unset the storage if $storage is null.
      *
      * @param IStorage $storage
      */
-    public static function setStorage($storage) {
+    public static function setStorage($storage)
+    {
         self::$storage = $storage;
     }
 
@@ -623,7 +619,8 @@ class Client {
      *
      * @return float|int
      */
-    public static function randomFloat($min = 0, $max = 1) {
+    public static function randomFloat($min = 0, $max = 1)
+    {
         $M = mt_getrandmax();
 
         return $min + (mt_rand(0, $M - 1) / $M) * ($max - $min);
@@ -637,7 +634,8 @@ class Client {
      *
      * @return string
      */
-    public static function randomString($length = 10) {
+    public static function randomString($length = 10)
+    {
         return substr(str_shuffle('QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm'), 1, $length);
     }
 
@@ -646,7 +644,8 @@ class Client {
      *
      * @return string
      */
-    private static function buildHeaderSignature() {
+    private static function buildHeaderSignature()
+    {
         $data = [
             'sys_id' => self::$sysId,
             'version' => self::$apiVersion,
@@ -654,6 +653,10 @@ class Client {
             '_time' => time(),
             '_salt' => self::randomString(10),
         ];
+        // 2019-04-10 client未配置处理 判断是否thinkphp5从里面取
+        if (empty($data['client_ip']) && class_exists('\think\Request')) {
+            $date['client_ip'] = \think\Request::instance()->ip();
+        }
         $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
 
         return base64_encode(openssl_encrypt(
@@ -668,13 +671,14 @@ class Client {
     /**
      * Assert client is correctly initialized.
      */
-    private static function assertInitialized() {
+    private static function assertInitialized()
+    {
         if (!isset(self::$sysId) &&
             !isset(self::$secretKey) &&
             !isset(self::$sysMasterKey)) {
-            throw new \RuntimeException('Client is not initialized, '.
-                                        'please specify application key '.
-                                        'with Client::initialize.');
+            throw new \RuntimeException('Client is not initialized, ' .
+                'please specify application key ' .
+                'with Client::initialize.');
         }
     }
 }
