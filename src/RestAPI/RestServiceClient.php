@@ -18,7 +18,7 @@ class RestServiceClient {
     /**
      * Client version.
      */
-    const VERSION = '0.2.5';
+    const VERSION = '0.2.6';
 
     /**
      * Is in production or not.
@@ -727,7 +727,7 @@ class RestServiceClient {
         ];
         // 2019-04-10 client未配置处理 判断是否thinkphp5从里面取
         if (empty($data['client_ip']) && class_exists('\think\Request')) {
-            $date['client_ip'] = \think\Request::instance()->ip();
+            $data['client_ip'] = \think\Request::instance()->ip();
         }
         $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
 
