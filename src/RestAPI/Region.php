@@ -2,13 +2,14 @@
 
 namespace RestAPI;
 
-abstract class Region {
+abstract class Region
+{
     // 本地环境
     const DEV = 0;
     // 测试环境
     const TESTING = 1;
     // 预上线环境
-    const PERVIEW = 2;
+    const UAT = 2;
 
     // 地域
     const CN = 11;
@@ -22,7 +23,8 @@ abstract class Region {
      *
      * @return mixed
      */
-    public static function fromName($name) {
-        return constant(self::class.'::'.strtoupper($name));
+    public static function fromName($name)
+    {
+        return constant(self::class . '::' . strtoupper($name));
     }
 }

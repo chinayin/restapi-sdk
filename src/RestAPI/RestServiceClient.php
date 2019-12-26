@@ -18,7 +18,7 @@ class RestServiceClient
     /**
      * Client version.
      */
-    const VERSION = '0.2.7';
+    const VERSION = '0.3.0';
 
     /**
      * Is in production or not.
@@ -32,7 +32,7 @@ class RestServiceClient
      *
      * @var string
      */
-    private static $apiVersion = '1.0';
+    private static $apiVersion = '2.0';
 
     /**
      * API Timeout.
@@ -113,6 +113,13 @@ class RestServiceClient
     private static $accessToken;
 
     /**
+     * logger flag
+     *
+     * @var bool
+     */
+    private static $logger;
+
+    /**
      * Initialize application key and settings.
      *
      * @param string $sysId     Application ID
@@ -141,6 +148,8 @@ class RestServiceClient
         if ($region) {
             self::useRegion($region);
         }
+        // logger
+        self::$logger = function_exists('__LOG_MESSAGE');
     }
 
     /**
@@ -324,6 +333,7 @@ class RestServiceClient
     ) {
         self::assertInitialized();
         $url = self::getAPIEndPoint();
+        $unionId = rand(100, 999);
         // 强制/开头的path
         if (0 !== strpos($path, '/')) {
             throw new \RuntimeException(
@@ -331,7 +341,9 @@ class RestServiceClient
                 -1
             );
         }
-        $url .= '/' . ltrim($path, '/');
+        $path = '/' . ltrim($path, '/');
+        $url .= $path;
+        self::log($unionId, 'request', "$method $url");
 
         $defaultHeaders = self::buildHeaders($useMasterKey);
         if (empty($headers)) {
@@ -356,6 +368,7 @@ class RestServiceClient
         curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($req, CURLOPT_TIMEOUT, self::$apiTimeout);
         // curl_setopt($req, CURLINFO_HEADER_OUT, true);
+        // 返回 response_header, 如果不为 true, 只会获得响应的正文
         // curl_setopt($req, CURLOPT_HEADER, true);
         curl_setopt($req, CURLOPT_ENCODING, '');
         switch ($method) {
@@ -365,28 +378,25 @@ class RestServiceClient
                     $url .= '?' . http_build_query($data);
                     curl_setopt($req, CURLOPT_URL, $url);
                 }
-
                 break;
             case 'POST':
                 curl_setopt($req, CURLOPT_POST, 1);
                 curl_setopt($req, CURLOPT_POSTFIELDS, $json);
-
                 break;
             case 'PUT':
                 curl_setopt($req, CURLOPT_POSTFIELDS, $json);
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
+                break;
             // no break
             case 'DELETE':
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
-
                 break;
             default:
                 break;
         }
-        $reqId = rand(100, 999);
         if (self::$debugMode) {
-            error_log("[DEBUG] HEADERS {$reqId}:" . json_encode($headersList));
-            error_log("[DEBUG] REQUEST {$reqId}: {$method} {$url} {$json}");
+            error_log("[DEBUG] HEADERS {$unionId}:" . json_encode($headersList));
+            error_log("[DEBUG] REQUEST {$unionId}: {$method} {$url} {$json}");
         }
         // list($headers, $resp) = explode("\r\n\r\n", curl_exec($req), 2);
         $resp = curl_exec($req);
@@ -394,35 +404,38 @@ class RestServiceClient
         $respType = curl_getinfo($req, CURLINFO_CONTENT_TYPE);
         $error = curl_error($req);
         $errno = curl_errno($req);
+        $respInfo = curl_getinfo($req);
         curl_close($req);
-
         if (self::$debugMode) {
-            error_log("[DEBUG] RESPONSE {$reqId}: {$resp}");
+            error_log("[DEBUG] RESPONSE {$unionId}: {$resp}");
         }
-
         /* type of error:
           *  - curl connection error
           *  - http status error 4xx, 5xx
           *  - rest api error
           */
         if ($errno > 0) {
+            self::log($unionId, 'exception', "CURL connection (${url}) error: ${errno} ${error}");
             throw new \RuntimeException(
-                "CURL connection (${url}) error: " .
-                "${errno} ${error}",
+                "CURL connection (${url}) error: ${errno} ${error}",
                 $errno
             );
         }
         if (false !== strpos($respType, 'text/html')) {
+            self::log($unionId, 'exception', "Bad request (${url})");
             throw new RestAPIException('Bad request', -1);
         }
-
         $data = json_decode($resp, true);
+        $request_id = empty($data) ? '' : self::parseRequestId($data);
+        self::log($unionId, 'response',
+            $request_id . json_encode(self::parseCurlInfo($respInfo), JSON_UNESCAPED_UNICODE));
+
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
-
-            throw new RestAPIException("{$data['message']}", $code);
+            $e = new RestAPIException("{$data['message']}", $code);
+            $e->setErrorData($data);
+            throw $e;
         }
-
         return $data;
     }
 
@@ -645,8 +658,9 @@ class RestServiceClient
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
-
-            throw new RestAPIException("{$data['message']}", $code);
+            $e = new RestAPIException("{$data['message']}", $code);
+            $e->setErrorData($data);
+            throw $e;
         }
 
         return $data;
@@ -759,5 +773,39 @@ class RestServiceClient
                 'please specify application key ' .
                 'with Client::initialize.');
         }
+    }
+
+    private static function parseRequestId($data)
+    {
+        return isset($data['request_id']) ? $data['request_id'] : '';
+    }
+
+    private static function parseCurlInfo($r)
+    {
+        return [
+            'http_code' => $r['http_code'] ?? '',
+            'total_time' => number_format($r['total_time'] ?? 0, 3),
+            'primary_ip' => $r['primary_ip'] ?? '',
+            'download_content_length' => $r['download_content_length'] ?? '',
+            'namelookup_time' => number_format($r['namelookup_time'] ?? 0, 3),
+            'connect_time' => number_format($r['connect_time'] ?? 0, 3),
+            'pretransfer_time' => number_format($r['pretransfer_time'] ?? 0, 3),
+            'starttransfer_time' => number_format($r['starttransfer_time'] ?? 0, 3),
+        ];
+    }
+
+    /**
+     * 日志记录函数.
+     *
+     * @param       $unionid
+     * @param       $data
+     * @param       $key
+     */
+    private static function log($unionid, $key, $data)
+    {
+        if (!self::$logger) {
+            return;
+        }
+        __LOG_MESSAGE($data, "RestServiceClient($unionid)::$key");
     }
 }

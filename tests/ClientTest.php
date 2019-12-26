@@ -8,8 +8,10 @@ use RestAPI\Client;
  * @internal
  * @coversNothing
  */
-final class ClientTest extends TestCase {
-    protected function setUp() {
+final class ClientTest extends TestCase
+{
+    protected function setUp()
+    {
         Client::initialize(
             getenv('RESTAPI_SYS_ID'),
             getenv('RESTAPI_SYS_KEY'),
@@ -20,7 +22,8 @@ final class ClientTest extends TestCase {
         Client::setDebug(true);
     }
 
-    public function testAPIRegion() {
+    public function testAPIRegion()
+    {
         var_dump(Client::getAPIEndPoint());
         Client::useRegion('DEV');
         var_dump(Client::getAPIEndPoint());
@@ -28,7 +31,8 @@ final class ClientTest extends TestCase {
         var_dump(Client::getAPIEndPoint());
     }
 
-    public function testAPIEndPoint() {
+    public function testAPIEndPoint()
+    {
         $url = getenv('TEST_RESTAPI_API_SERVER');
         $this->assertSame("{$url}/1.0", Client::getAPIEndPoint());
 
@@ -39,7 +43,8 @@ final class ClientTest extends TestCase {
         $this->assertSame("{$url}/1.0", Client::getAPIEndPoint());
     }
 
-    public function testPost() {
+    public function testPost()
+    {
         $path = '/api/Oauth/checklogin';
         $data = [
             'email' => 'lei.tian@uhouzz.com',
@@ -50,12 +55,14 @@ final class ClientTest extends TestCase {
         $this->assertTrue(true);
     }
 
-    public function testRequestServerDate() {
+    public function testRequestServerDate()
+    {
         $data = Client::request('GET', '/date', null);
         $this->assertSame($data['__type'], 'Date');
     }
 
-    public function test_startWith() {
+    public function test_startWith()
+    {
         foreach (['/aaa/bbb', 'ccc/ddd'] as $path) {
             if (0 !== strpos($path, '/')) {
                 throw new \RuntimeException(
