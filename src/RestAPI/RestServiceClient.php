@@ -428,7 +428,7 @@ class RestServiceClient
         $data = json_decode($resp, true);
         $request_id = empty($data) ? '' : self::parseRequestId($data);
         self::log($unionId, 'response',
-            $request_id . json_encode(self::parseCurlInfo($respInfo), JSON_UNESCAPED_UNICODE));
+            $request_id . ',' . json_encode(self::parseCurlInfo($respInfo), JSON_UNESCAPED_UNICODE));
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
@@ -786,7 +786,7 @@ class RestServiceClient
             'http_code' => $r['http_code'] ?? '',
             'total_time' => number_format($r['total_time'] ?? 0, 3),
             'primary_ip' => $r['primary_ip'] ?? '',
-            'download_content_length' => $r['download_content_length'] ?? '',
+            'size_download' => $r['size_download'] ?? '',
             'namelookup_time' => number_format($r['namelookup_time'] ?? 0, 3),
             'connect_time' => number_format($r['connect_time'] ?? 0, 3),
             'pretransfer_time' => number_format($r['pretransfer_time'] ?? 0, 3),
