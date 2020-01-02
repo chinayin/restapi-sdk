@@ -2,7 +2,8 @@
 
 namespace RestAPI;
 
-class RouterService {
+class RouterService
+{
     const TTL_KEY = 'ttl';
     const API_SERVER_KEY = 'api_server';
     const IV_KEY = 'iv';
@@ -11,23 +12,25 @@ class RouterService {
     private $region;
 
     private static $DEFAULT_REGION_ROUTE = [
-        Region::DEV => 'srv.uhouzz.xyz',
-        Region::TESTING => 'testapi.uhomes.com/srv',
-        Region::PERVIEW => 'api.uhomes.com/srvpreview',
-        Region::CN => 'api.uhomes.com/srv',
-        Region::HK => 'hk-api.uhomes.com',
-        Region::US => 'us-api.uhomes.com',
+        Region::DEV => 'srvapi.uhomes.xyz',
+        Region::TESTING => 'srvapi-test.uhomes.com',
+        Region::UAT => 'srvapi-uat.uhomes.com',
+        Region::CN => 'srvapi.uhomes.com',
+        Region::HK => 'srvapi-hk.uhomes.com',
+        Region::US => 'srvapi-us.uhomes.com',
     ];
 
     private static $DEFAULT_REGION_IV = [
         Region::DEV => 'uhomescomtianlei',
         Region::TESTING => 'uhomescomtianlei',
+        Region::UAT => 'srvapi-uat.uhomes.com',
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
     ];
 
-    private function __construct($sysId) {
+    private function __construct($sysId)
+    {
         $this->sysId = $sysId;
         $region = getenv('RESTAPI_REGION');
         if (!$region) {
@@ -43,7 +46,8 @@ class RouterService {
      *
      * @return Router
      */
-    public static function getInstance($sysId) {
+    public static function getInstance($sysId)
+    {
         if (isset(self::$INSTANCES[$sysId])) {
             return self::$INSTANCES[$sysId];
         }
@@ -55,12 +59,12 @@ class RouterService {
 
     /**
      * Set region.
-     *
      * See `RestAPI\Region` for available regions.
      *
      * @param mixed $region
      */
-    public function setRegion($region) {
+    public function setRegion($region)
+    {
         if (is_numeric($region)) {
             $this->region = $region;
         } else {
@@ -75,14 +79,16 @@ class RouterService {
      *
      * @return null|mixed
      */
-    public function getRoute($server_key) {
+    public function getRoute($server_key)
+    {
         $this->validate_server_key($server_key);
         $routes = $this->getDefaultRoutes();
 
         return isset($routes[$server_key]) ? $routes[$server_key] : null;
     }
 
-    private function validate_server_key($server_key) {
+    private function validate_server_key($server_key)
+    {
         $routes = $this->getDefaultRoutes();
         if (!isset($routes[$server_key])) {
             throw new \InvalidArgumentException('Invalid server key.');
@@ -92,7 +98,8 @@ class RouterService {
     /**
      * Fallback default routes, if app router not available.
      */
-    private function getDefaultRoutes() {
+    private function getDefaultRoutes()
+    {
         $host = self::$DEFAULT_REGION_ROUTE[$this->region];
         $iv = self::$DEFAULT_REGION_IV[$this->region];
 
