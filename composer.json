@@ -26,7 +26,10 @@
   "autoload": {
     "psr-4": {
       "RestAPI\\": "src/RestAPI/"
-    }
+    },
+    "files": [
+      "src/functions.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
