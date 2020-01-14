@@ -37,11 +37,14 @@
     }
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "optimize-autoloader": true
   },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
   "extra": {
     "branch-alias": {
-      "dev-master": "0.2-dev"
+      "dev-master": "0.3-dev"
     }
   },
   "scripts": {
