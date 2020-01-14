@@ -273,8 +273,9 @@ class RestServiceClient
             return $url . '/' . self::$apiVersion;
         }
         $host = Router::getInstance(self::$sysId)->getRoute(Router::API_SERVER_KEY);
-
-        return "https://{$host}/" . self::$apiVersion;
+        // 2020-01-14 如果是内网调用 使用http协议
+        $isPrivateZone = Router::getInstance(self::$sysId)->getRoute(Router::IS_PRIVATE_ZONE_KEY);
+        return ($isPrivateZone ? 'http' : 'https') . "://{$host}/" . self::$apiVersion;
     }
 
     /**
