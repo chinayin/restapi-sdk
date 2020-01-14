@@ -6,6 +6,8 @@ class Router {
     const TTL_KEY = 'ttl';
     const API_SERVER_KEY = 'api_server';
     const IV_KEY = 'iv';
+    const IS_PRIVATE_ZONE_KEY = 'is_private_zone';
+    const CONST_IS_PRIVATE_ZONE_SERVER = 'IS_PRIVATE_ZONE_SERVER';
     private static $INSTANCES;
     private $sysId;
     private $region;
@@ -13,14 +15,21 @@ class Router {
     private static $DEFAULT_REGION_ROUTE = [
         Region::DEV => 'ssoapi.uhouzz.xyz',
         Region::TESTING => 'testssoapi.uhomes.com',
+        Region::UAT => 'ssoapi-uat.uhomes.com',
         Region::CN => 'ssoapi.uhomes.com',
-        Region::HK => 'hk-ssoapi.uhomes.com',
-        Region::US => 'us-ssoapi.uhomes.com',
+        Region::HK => 'ssoapi-hk.uhomes.com',
+        Region::US => 'ssoapi-us.uhomes.com',
+    ];
+
+    private static $DEFAULT_LOCAL_REGION_ROUTE = [
+        Region::CN => 'ssoapi.uhomes.local',
+        Region::TESTING => 'ssoapi-test.uhomes.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
         Region::DEV => 'uhomescomtianlei',
         Region::TESTING => 'uhomescomtianlei',
+        Region::UAT => 'uhomescomtianlei',
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
@@ -94,11 +103,17 @@ class Router {
     private function getDefaultRoutes() {
         $host = self::$DEFAULT_REGION_ROUTE[$this->region];
         $iv = self::$DEFAULT_REGION_IV[$this->region];
-
+        // 是否内网服务器
+        $isPrivateZoneServer = getenv(self::CONST_IS_PRIVATE_ZONE_SERVER);
+        $isPrivateZoneServer = $isPrivateZoneServer ? true : false;
+        if ($isPrivateZoneServer && isset(self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region])) {
+            $host = self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region];
+        }
         return [
             self::API_SERVER_KEY => $host,
             self::IV_KEY => $iv,
             self::TTL_KEY => 3600,
+            self::IS_PRIVATE_ZONE_KEY => $isPrivateZoneServer,
         ];
     }
 }
