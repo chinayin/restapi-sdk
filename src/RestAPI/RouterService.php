@@ -20,10 +20,14 @@ class RouterService
         Region::US => 'srvapi-us.uhomes.com',
     ];
 
+    private static $DEFAULT_LOCAL_REGION_ROUTE = [
+        Region::CN => 'srvapi.uhomes.local',
+    ];
+
     private static $DEFAULT_REGION_IV = [
         Region::DEV => 'uhomescomtianlei',
         Region::TESTING => 'uhomescomtianlei',
-        Region::UAT => 'srvapi-uat.uhomes.com',
+        Region::UAT => 'uhomescomtianlei',
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
@@ -102,7 +106,11 @@ class RouterService
     {
         $host = self::$DEFAULT_REGION_ROUTE[$this->region];
         $iv = self::$DEFAULT_REGION_IV[$this->region];
-
+        // 是否内网服务器
+        $isPrivateZoneServer = getenv('IS_PRIVATE_ZONE_SERVER');
+        if ($isPrivateZoneServer && isset(self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region])) {
+            $host = self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region];
+        }
         return [
             self::API_SERVER_KEY => $host,
             self::IV_KEY => $iv,
