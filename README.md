@@ -26,10 +26,13 @@ composer require chinayin/restapi-sdk
 然后在项目中加载 SDK，并初始化：
 
 #### REGION
-* testing   测试环境
-* cn        线上国内服务器
-* hk        线上香港服务器
-* us        线上美国服务器
+|region|remark|
+|---|---|
+|testing|测试环境|
+|uat|预上线环境|
+|cn|线上国内|
+|hk|线上香港|
+|us|线上美国|
 
 ```php
 // 如果是 composer 安装
@@ -83,7 +86,29 @@ try {
     // 如果返回错误，这里会抛出异常 RestServiceClient
     // 错误格式 错误码不为0都为报错
     // { "error_code": 1, "message": "error" }
+    // $ex->getData();
 }
+```
+```php
+// 精简用法
+RestServicePost($path, $params, $headers = [])
+RestServiceGet($path, $params, $headers = [])
+
+$resp = RestServicePost('/api/oauth/checklogin',['username'=>'a']);
+
+// 超时时间设置(2s)
+$resp = RestServiceGet('/api/oauth/get',[],['timeout'=>2]);
+
+```
+
+##### Env配置
+```
+[restapi]
+sys_id = 1
+secret_key = xxxx
+region = xx
+# 当需要单独配置连接域名时
+# server_url = rest.xxxx.local
 ```
 
 感谢
