@@ -90,7 +90,7 @@ try {
 }
 ```
 ```php
-// 精简用法
+// 精简用法(须配置env)
 RestServicePost($path, $params, $headers = [])
 RestServiceGet($path, $params, $headers = [])
 
@@ -101,7 +101,7 @@ $resp = RestServiceGet('/api/oauth/get',[],['timeout'=>2]);
 
 ```
 
-##### Env配置
+##### env配置
 ```
 [restapi]
 sys_id = 1
