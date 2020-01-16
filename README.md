@@ -1,8 +1,9 @@
 RestAPI PHP SDK
 ====
 
-[![Latest Version](https://img.shields.io/packagist/v/chinayin/restapi-sdk.svg)
-](https://packagist.org/packages/chinayin/restapi-sdk)
+[![Latest Version](https://img.shields.io/packagist/v/chinayin/restapi-sdk.svg)](https://packagist.org/packages/chinayin/restapi-sdk)
+[![Total Downloads](https://img.shields.io/packagist/dt/chinayin/restapi-sdk.svg)](https://packagist.org/packages/chinayin/restapi-sdk)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 安装
 ----
