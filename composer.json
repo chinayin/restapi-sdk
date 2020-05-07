@@ -21,7 +21,8 @@
   "require-dev": {
     "phpunit/phpunit": "^6.0",
     "phploc/phploc": "^4.0",
-    "sebastian/phpcpd": "^3.0"
+    "sebastian/phpcpd": "^3.0",
+    "phpstan/phpstan": "^0.12"
   },
   "autoload": {
     "psr-4": {
@@ -53,6 +54,7 @@
     "lint": "find . -type d \\( -path ./vendor -o -path ./extend -o -path ./thinkphp \\) -prune -o -type f -name \\*.php -exec php -l {} \\;",
     "phpmetrics": "vendor/bin/phpmetrics --exclude=vendor,thinkphp,runtime --report-html=phpmetrics ./",
     "phploc": "vendor/bin/phploc --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./",
-    "phpcpd": "vendor/bin/phpcpd --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./"
+    "phpcpd": "vendor/bin/phpcpd --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./",
+    "phpstan": "vendor/bin/phpstan analyse -l 6 src"
   }
 }

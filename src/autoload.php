@@ -1,7 +1,6 @@
 <?php
 /**
  * Enable autoload.
- *
  * Require this file to enable autoload SDK classes on the fly. If you're
  * using composer, it should be required automatically.
  *
@@ -14,7 +13,7 @@ spl_autoload_register(function ($class) {
     $prefix = 'RestAPI\\';
 
     // base directory for the namespace prefix
-    $base_dir = __DIR__.'/RestAPI/';
+    $base_dir = __DIR__ . '/RestAPI/';
 
     // does the class use the namespace prefix?
     $len = strlen($prefix);
@@ -29,7 +28,7 @@ spl_autoload_register(function ($class) {
     // replace the namespace prefix with the base directory, replace
     // namespace separators with directory separators in the relative
     // class name, append with .php
-    $file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
 
     // if the file exists, require it
     if (file_exists($file)) {

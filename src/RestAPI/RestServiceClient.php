@@ -140,7 +140,7 @@ class RestServiceClient
         ];
 
         // Use session storage by default
-        if (!self::$storage) {
+        if (null === self::$storage) {
             self::$storage = new SessionStorage();
         }
 
@@ -281,7 +281,7 @@ class RestServiceClient
     /**
      * Build authentication headers.
      *
-     * @param bool $useMasterKey
+     * @param bool|null $useMasterKey
      *
      * @return array
      */
@@ -352,6 +352,7 @@ class RestServiceClient
         } else {
             $headers = array_merge($defaultHeaders, $headers);
         }
+        $json = null;
         if (false !== strpos($headers['Content-Type'], '/json')) {
             $json = json_encode($data);
         }
@@ -670,11 +671,11 @@ class RestServiceClient
     /**
      * Format date according to spec.
      *
-     * @param DateTime $date
+     * @param \DateTime $date
      *
      * @return string
      */
-    public static function formatDate($date)
+    public static function formatDate(\DateTime $date)
     {
         $utc = clone $date;
         $utc->setTimezone(new \DateTimezone('UTC'));

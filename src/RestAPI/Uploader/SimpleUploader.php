@@ -4,7 +4,8 @@ namespace RestAPI\Uploader;
 
 use RestAPI\RestServiceClient;
 
-abstract class SimpleUploader {
+abstract class SimpleUploader
+{
     protected $uploadUrl;
     protected $authToken;
     protected $userAgent;
@@ -16,18 +17,10 @@ abstract class SimpleUploader {
      *
      * @return SimpleUploader
      */
-    public static function createUploader($provider) {
+    public static function createUploader($provider)
+    {
         if ('uhz' === $provider) {
             return new UhzUploader();
-        }
-        if ('qiniu' === $provider) {
-            return new QiniuUploader();
-        }
-        if ('s3' === $provider) {
-            return new S3Uploader();
-        }
-        if ('qcloud' === $provider) {
-            return new QCloudUploader();
         }
 
         throw new \RuntimeException("File provider not supported: {$provider}");
@@ -42,7 +35,8 @@ abstract class SimpleUploader {
      *
      * @return string Multipart encoded string
      */
-    public function multipartEncode($file, $params, $boundary) {
+    public function multipartEncode($file, $params, $boundary)
+    {
         $body = "\r\n";
 
         foreach ($params as $key => $val) {
@@ -78,17 +72,20 @@ abstract class SimpleUploader {
      * @param string $uploadUrl File provider url
      * @param string $authToken Auth token for file provider
      */
-    public function initialize($uploadUrl, $authToken) {
+    public function initialize($uploadUrl, $authToken)
+    {
         $this->uploadUrl = $uploadUrl;
         $this->authToken = $authToken;
         $this->userAgent = RestServiceClient::getVersionString();
     }
 
-    public function getUploadUrl() {
+    public function getUploadUrl()
+    {
         return $this->uploadUrl;
     }
 
-    public function getAuthToken() {
+    public function getAuthToken()
+    {
         return $this->authToken;
     }
 
@@ -101,7 +98,8 @@ abstract class SimpleUploader {
      *
      * @return string
      */
-    protected static function getFileFieldName() {
+    protected static function getFileFieldName()
+    {
         return 'file';
     }
 }

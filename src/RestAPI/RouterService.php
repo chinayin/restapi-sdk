@@ -51,7 +51,7 @@ class RouterService
      *
      * @param $sysId
      *
-     * @return Router
+     * @return RouterService
      */
     public static function getInstance($sysId)
     {

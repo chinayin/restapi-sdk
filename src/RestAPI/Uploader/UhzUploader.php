@@ -9,21 +9,24 @@ use RestAPI\MIMEType;
  *
  * @see
  */
-class UhzUploader extends SimpleUploader {
+class UhzUploader extends SimpleUploader
+{
     private $app_id;
     private $cust_id;
     private $user_id;
     private $type_id;
     private $post_params = [];
 
-    public function crc32Data($data) {
+    public function crc32Data($data)
+    {
         $hex = hash('crc32b', $data);
         $ints = unpack('N', pack('H*', $hex));
 
         return sprintf('%u', $ints[1]);
     }
 
-    public function uploadWithLocalFile($filepath, $key) {
+    public function uploadWithLocalFile($filepath, $key)
+    {
         $content = file_get_contents($filepath);
         if (false === $content) {
             throw new \RuntimeException("Read file error at ${filepath}");
@@ -41,9 +44,12 @@ class UhzUploader extends SimpleUploader {
      * @param string $content  File content
      * @param string $mimeType MIME type of file
      * @param string $key      Generated file name
+     *
+     * @return mixed
      */
-    public function upload($content, $mimeType, $key) {
-        $boundary = md5(microtime(true));
+    public function upload($content, $mimeType, $key)
+    {
+        $boundary = md5((string)microtime(true));
 
         // 拼接参数
         $params = [
@@ -59,12 +65,12 @@ class UhzUploader extends SimpleUploader {
             'name' => $key,
             'mimeType' => $mimeType,
             'content' => $content,
-        ], array_merge($params,$this->post_params), $boundary);
+        ], array_merge($params, $this->post_params), $boundary);
 
-        $headers[] = 'User-Agent: '.$this->userAgent;
-        $headers[] = 'Content-Type: multipart/form-data;'.
-                     " boundary={$boundary}";
-        $headers[] = 'Content-Length: '.strlen($body);
+        $headers[] = 'User-Agent: ' . $this->userAgent;
+        $headers[] = 'Content-Type: multipart/form-data;' .
+            " boundary={$boundary}";
+        $headers[] = 'Content-Length: ' . strlen($body);
 
         $url = $this->getUploadUrl();
         $ch = curl_init($url);
@@ -87,57 +93,80 @@ class UhzUploader extends SimpleUploader {
          */
         if ($errno > 0) {
             throw new \RuntimeException(
-                "CURL (${url}) error: ".
-                                        "{$errno} {$error}",
-                                        $errno
+                "CURL (${url}) error: " .
+                "{$errno} {$error}",
+                $errno
             );
         }
 
         return json_decode($resp, true);
     }
 
-    public function setUploadParams(array $params) {
-
-        if(isset($params['app_id'])){$this->setAppId((int) $params['app_id']);unset($params['app_id']);}
-        if(isset($params['type_id'])){$this->setTypeId((int) $params['type_id']);unset($params['type_id']);}
-        if(isset($params['cust_id'])){$this->setCustId((int) $params['cust_id']);unset($params['cust_id']);}
-        if(isset($params['user_id'])){$this->setUserId((int) $params['user_id']);unset($params['user_id']);}
-        empty($params) || $this->post_params = $params;
-
+    public function setUploadParams(array $params)
+    {
+        if (isset($params['app_id'])) {
+            $this->setAppId((int)$params['app_id']);
+            unset($params['app_id']);
+        }
+        if (isset($params['type_id'])) {
+            $this->setTypeId((int)$params['type_id']);
+            unset($params['type_id']);
+        }
+        if (isset($params['cust_id'])) {
+            $this->setCustId((int)$params['cust_id']);
+            unset($params['cust_id']);
+        }
+        if (isset($params['user_id'])) {
+            $this->setUserId((int)$params['user_id']);
+            unset($params['user_id']);
+        }
+        empty($params) or $this->post_params = $params;
         return $this;
     }
 
     /**
-     * @param mixed $app_id
+     * @param int $app_id
+     *
+     * @return $this
      */
-    public function setAppId(int $app_id) {
+    public function setAppId(int $app_id)
+    {
         $this->app_id = $app_id;
 
         return $this;
     }
 
     /**
-     * @param mixed $cust_id
+     * @param int $cust_id
+     *
+     * @return $this
      */
-    public function setCustId(int $cust_id) {
+    public function setCustId(int $cust_id)
+    {
         $this->cust_id = $cust_id;
 
         return $this;
     }
 
     /**
-     * @param mixed $user_id
+     * @param int $user_id
+     *
+     * @return $this
      */
-    public function setUserId(int $user_id) {
+    public function setUserId(int $user_id)
+    {
         $this->user_id = $user_id;
 
         return $this;
     }
 
     /**
-     * @param mixed $type_id
+     * @param int $type_id
+     *
+     * @return $this
      */
-    public function setTypeId(int $type_id) {
+    public function setTypeId(int $type_id)
+    {
         $this->type_id = $type_id;
 
         return $this;

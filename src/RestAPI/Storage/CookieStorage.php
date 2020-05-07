@@ -4,11 +4,8 @@ namespace RestAPI\Storage;
 
 /**
  * Cookie Storage
- *
  * Persist key value in client (web browser) cookies.
- *
  * Notes:
- *
  * 1. Since it uses PHP built-in setcookie, set value will fail
  *    after headers being sent.
  * 2. There are limits on number of bytes per cookie, and number of
@@ -17,7 +14,8 @@ namespace RestAPI\Storage;
  *
  * @see http://php.net/manual/en/function.setcookie.php
  */
-class CookieStorage implements IStorage {
+class CookieStorage implements IStorage
+{
     /**
      * Domain scope for cookie availability.
      *
@@ -34,7 +32,6 @@ class CookieStorage implements IStorage {
 
     /**
      * When to expire the cookie.
-     *
      * It is number of seconds since epoch time.
      *
      * @var int
@@ -48,14 +45,15 @@ class CookieStorage implements IStorage {
      * @param string $path    Cookie path scope
      * @param string $domain  Cookie domain scope
      */
-    public function __construct($seconds=0, $path="/", $domain=null) {
+    public function __construct($seconds = 0, $path = "/", $domain = null)
+    {
         if ($seconds <= 0) {
             // default to 7 days from now
             $seconds = 60 * 60 * 24 * 7;
         }
         $this->expireIn = time() + $seconds;
-        $this->path     = $path;
-        $this->domain   = $domain;
+        $this->path = $path;
+        $this->domain = $domain;
     }
 
     /**
@@ -64,9 +62,11 @@ class CookieStorage implements IStorage {
      * @param string $key
      * @param mixed  $val
      * @param int    $seconds Number of seconds to live
-     * @return $this
+     *
+     * @return IStorage|void
      */
-    public function set($key, $val, $seconds=null) {
+    public function set($key, $val, $seconds = null)
+    {
         $expire = $seconds ? (time() + $seconds) : $this->expireIn;
         setcookie($key, $val, $expire, $this->path, $this->domain);
     }
@@ -75,9 +75,11 @@ class CookieStorage implements IStorage {
      * Get value by key
      *
      * @param string $key
+     *
      * @return mixed
      */
-    public function get($key) {
+    public function get($key)
+    {
         if (isset($_COOKIE[$key])) {
             return $_COOKIE[$key];
         }
@@ -89,16 +91,18 @@ class CookieStorage implements IStorage {
      *
      * @param string $key
      */
-    public function remove($key) {
-        setcookie($key, false, 1);
+    public function remove($key)
+    {
+        setcookie($key, '', 1);
     }
 
     /**
      * Clear all data in storage
      *
-     * @throws RuntimeException
+     * @return IStorage|void
      */
-    public function clear() {
+    public function clear()
+    {
         throw new \RuntimeException("Not implemented error.");
     }
 }

@@ -1,0 +1,12 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method RestAPI\\\\Uploader\\\\SimpleUploader\\:\\:setUploadParams\\(\\)\\.$#"
+			count: 1
+			path: src/RestAPI/RestServiceClient.php
+
+		-
+			message: "#^Parameter \\#1 \\$autoload_function of function spl_autoload_register expects callable\\(string\\)\\: void, Closure\\(mixed\\)\\: mixed given\\.$#"
+			count: 1
+			path: src/autoload.php
+
