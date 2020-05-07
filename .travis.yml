@@ -15,10 +15,13 @@ jobs:
       env: deps=low
     - php: 7.3
     - php: 7.4
+  allow_failures:
+    - php: 7.2
+      env: deps=low
 
 install:
   - if [ "$deps" == "low" ]; then travis_retry composer update --prefer-dist --prefer-lowest --prefer-stable; fi
   - if [ "$deps" != "low" ]; then travis_retry composer install --prefer-dist; fi
 
 script:
-  - vendor/bin/phpstan analyse
+  - composer travis

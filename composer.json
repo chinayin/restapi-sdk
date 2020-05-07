@@ -45,16 +45,18 @@
   "minimum-stability": "dev",
   "extra": {
     "branch-alias": {
-      "dev-master": "0.3-dev"
+      "dev-master": "0.4-dev"
     }
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
     "test-ci": "vendor/bin/phpunit --coverage-text",
-    "lint": "find . -type d \\( -path ./vendor -o -path ./extend -o -path ./thinkphp \\) -prune -o -type f -name \\*.php -exec php -l {} \\;",
-    "phpmetrics": "vendor/bin/phpmetrics --exclude=vendor,thinkphp,runtime --report-html=phpmetrics ./",
-    "phploc": "vendor/bin/phploc --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./",
-    "phpcpd": "vendor/bin/phpcpd --exclude=vendor --exclude=thinkphp --exclude=runtime --exclude=extend ./",
-    "phpstan": "vendor/bin/phpstan analyse -l 6 src"
+    "phploc": "vendor/bin/phploc --exclude=vendor --exclude=tests ./",
+    "phpcpd": "vendor/bin/phpcpd --exclude=vendor --exclude=tests ./",
+    "phpstan": "vendor/bin/phpstan analyse",
+    "travis": [
+      "composer phploc",
+      "composer phpstan"
+    ]
   }
 }
