@@ -1,6 +1,7 @@
 language: php
 os:
   - linux
+dist: bionic
 
 cache:
   directories:
@@ -10,14 +11,10 @@ jobs:
   fast_finish: true
   include:
     - php: 7.2
-      dist: bionic
     - php: 7.2
-      dist: bionic
       env: deps=low
     - php: 7.3
-      dist: bionic
     - php: 7.4
-      dist: bionic
 
 install:
   - if [ "$deps" == "low" ]; then travis_retry composer update --prefer-dist --prefer-lowest --prefer-stable; fi
