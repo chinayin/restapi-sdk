@@ -1,20 +1,27 @@
 language: php
+os:
+  - linux
 
 cache:
   directories:
     - $HOME/.composer/cache/files
 
-matrix:
+jobs:
+  fast_finish: true
   include:
     - php: 7.2
       dist: bionic
-      env: COMPOSER_OPTS=""
     - php: 7.2
       dist: bionic
-      env: COMPOSER_OPTS="--prefer-lowest"
+      env: deps=low
+    - php: 7.3
+      dist: bionic
+    - php: 7.4
+      dist: bionic
 
 install:
-  - travis_retry composer update --prefer-dist $COMPOSER_OPTS
+  - if [ "$deps" == "low" ]; then travis_retry composer update --prefer-dist --prefer-lowest --prefer-stable; fi
+  - if [ "$deps" != "low" ]; then travis_retry composer install --prefer-dist; fi
 
 script:
   - vendor/bin/phpstan analyse
