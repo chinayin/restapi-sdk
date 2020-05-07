@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * @param       $path
+ * @param       $params
+ * @param array $headers
+ *
+ * @return array
+ * @throws \RestAPI\RestAPIException
+ */
 function RestServicePost($path, $params, $headers = [])
 {
-//    try {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
         \RestAPI\Helper::getEnv('restapi.secret_key'),
@@ -18,15 +25,18 @@ function RestServicePost($path, $params, $headers = [])
         empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
     }
     return \RestAPI\RestServiceClient::post($path, $params, $headers);
-//    } catch (\RestAPI\RestAPIException $e) {
-//        \RestAPI\Helper::log($e, 'RestAPIException');
-//        return false;
-//    }
 }
 
+/**
+ * @param       $path
+ * @param       $params
+ * @param array $headers
+ *
+ * @return array
+ * @throws \RestAPI\RestAPIException
+ */
 function RestServiceGet($path, $params, $headers = [])
 {
-//    try {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
         \RestAPI\Helper::getEnv('restapi.secret_key'),
@@ -42,8 +52,4 @@ function RestServiceGet($path, $params, $headers = [])
         empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
     }
     return \RestAPI\RestServiceClient::get($path, $params, $headers);
-//    } catch (\RestAPI\RestAPIException $e) {
-//        \RestAPI\Helper::log($e, 'RestAPIException');
-//        return false;
-//    }
 }
