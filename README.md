@@ -4,14 +4,14 @@ RestAPI PHP SDK
 [![Author](https://img.shields.io/badge/author-@chinayin-blue.svg)](https://github.com/chinayin)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Latest Version](https://img.shields.io/packagist/v/chinayin/restapi-sdk.svg)](https://packagist.org/packages/chinayin/restapi-sdk)
-[![Build Status](https://travis-ci.org/chinayin/restapi-sdk.svg?branch=0.4)](https://travis-ci.org/thephpleague/flysystem)
+[![Build Status](https://travis-ci.org/chinayin/restapi-sdk.svg?branch=0.4)](https://travis-ci.org/chinayin/restapi-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/chinayin/restapi-sdk.svg)](https://packagist.org/packages/chinayin/restapi-sdk)
 ![php 7.2+](https://img.shields.io/badge/php-min%207.2-red.svg)
 
 安装
 ----
 
-运行环境要求 PHP 7.0 及以上版本，以及
+运行环境要求 PHP 7.2 及以上版本，以及
 [cURL](http://php.net/manual/zh/book.curl.php)。
 
 #### composer 安装

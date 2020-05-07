@@ -1,6 +1,5 @@
 language: php
-os:
-  - linux
+os: linux
 dist: bionic
 
 cache:
@@ -23,5 +22,4 @@ install:
   - if [ "$deps" == "low" ]; then travis_retry composer update --prefer-dist --prefer-lowest --prefer-stable; fi
   - if [ "$deps" != "low" ]; then travis_retry composer install --prefer-dist; fi
 
-script:
-  - composer travis
+script: composer travis
