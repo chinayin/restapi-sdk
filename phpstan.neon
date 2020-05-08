@@ -15,5 +15,5 @@ parameters:
     excludes_analyse:
         - src/AdapterTest/
     ignoreErrors:
-        - '#Function __LOG_MESSAGE not found\.#'
+        - '#Function __LOG_MESSAGE.* not found\.#'
         - '#PHPDoc tag .* has invalid value.*#'
