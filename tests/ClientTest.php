@@ -10,7 +10,7 @@ use RestAPI\Client;
  */
 final class ClientTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         Client::initialize(
             getenv('RESTAPI_SYS_ID'),
