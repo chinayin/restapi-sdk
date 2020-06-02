@@ -4,22 +4,19 @@ namespace RestAPI\Storage;
 
 /**
  * Session Based Storage
- *
  * `$_SESSION` based key-value storage for persistence.
- *
  * Note that PHP stores session data by default in local file, which
  * means the storage data will only be available to local server
  * instance. In a distributed deployment, requests of same user might
  * be routed to different instances, where session data might be not
  * avaialible. In such cases this session based storage should __not__
  * be used.
- *
  */
-class SessionStorage implements IStorage {
+class SessionStorage implements IStorage
+{
 
     /**
      * Storage Key
-     *
      * Value will be stored under this key in $_SESSION.
      *
      * @var string
@@ -29,9 +26,10 @@ class SessionStorage implements IStorage {
     /**
      * Initialize session storage
      */
-    public function __construct() {
+    public function __construct()
+    {
         if (!isset($_SESSION[static::$storageKey])) {
-            $_SESSION[static::$storageKey] = array();
+            $_SESSION[static::$storageKey] = [];
         }
     }
 
@@ -40,8 +38,11 @@ class SessionStorage implements IStorage {
      *
      * @param string $key
      * @param mixed  $val
+     *
+     * @return IStorage|void
      */
-    public function set($key, $val) {
+    public function set($key, $val)
+    {
         $_SESSION[static::$storageKey][$key] = $val;
     }
 
@@ -49,10 +50,12 @@ class SessionStorage implements IStorage {
      * Get value by key
      *
      * @param string $key
+     *
      * @return mixed
      */
-    public function get($key) {
-        if (isset( $_SESSION[static::$storageKey][$key])) {
+    public function get($key)
+    {
+        if (isset($_SESSION[static::$storageKey][$key])) {
             return $_SESSION[static::$storageKey][$key];
         }
         return null;
@@ -62,16 +65,22 @@ class SessionStorage implements IStorage {
      * Remove key from storage
      *
      * @param string $key
+     *
+     * @return IStorage|void
      */
-    public function remove($key) {
+    public function remove($key)
+    {
         unset($_SESSION[static::$storageKey][$key]);
     }
 
     /**
      * Clear all data in storage
+     *
+     * @return IStorage|void
      */
-    public function clear() {
-        $_SESSION[static::$storageKey] = array();
+    public function clear()
+    {
+        $_SESSION[static::$storageKey] = [];
     }
 }
 

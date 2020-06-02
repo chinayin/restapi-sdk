@@ -90,6 +90,8 @@ class CookieStorage implements IStorage
      * Remove key from storage
      *
      * @param string $key
+     *
+     * @return IStorage|void
      */
     public function remove($key)
     {
