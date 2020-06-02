@@ -18,7 +18,7 @@ class RestServiceClient
     /**
      * Client version.
      */
-    const VERSION = '0.3.3';
+    const VERSION = '0.4.1';
 
     /**
      * Is in production or not.

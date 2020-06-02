@@ -2,12 +2,12 @@
   "name": "chinayin/restapi-sdk",
   "description": "restapi sdk",
   "type": "library",
+  "license": "Apache-2.0",
+  "homepage": "http://github.com/chinayin/restapi-sdk",
   "keywords": [
     "restapi",
     "sdk"
   ],
-  "homepage": "http://github.com/chinayin/restapi-sdk",
-  "license": "Apache-2.0",
   "authors": [
     {
       "name": "chinayin",

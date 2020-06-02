@@ -24,7 +24,7 @@ class RouterService
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
         Region::CN => 'srvapi.uhomes.local',
-        Region::TESTING => 'srvapi-test.uhomes.local',
+        Region::TESTING => 'srvapi.uhomes-test.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
