@@ -2,7 +2,8 @@
 
 namespace RestAPI;
 
-class Router {
+class Router
+{
     const TTL_KEY = 'ttl';
     const API_SERVER_KEY = 'api_server';
     const IV_KEY = 'iv';
@@ -14,7 +15,7 @@ class Router {
 
     private static $DEFAULT_REGION_ROUTE = [
         Region::DEV => 'ssoapi.uhouzz.xyz',
-        Region::TESTING => 'testssoapi.uhomes.com',
+        Region::TESTING => 'ssoapi-test.uhomes.com',
         Region::UAT => 'ssoapi-uat.uhomes.com',
         Region::CN => 'ssoapi.uhomes.com',
         Region::HK => 'ssoapi-hk.uhomes.com',
@@ -35,7 +36,8 @@ class Router {
         Region::US => 'uhomescomtianlei',
     ];
 
-    private function __construct($sysId) {
+    private function __construct($sysId)
+    {
         $this->sysId = $sysId;
         $region = getenv('RESTAPI_REGION');
         if (!$region) {
@@ -51,7 +53,8 @@ class Router {
      *
      * @return Router
      */
-    public static function getInstance($sysId) {
+    public static function getInstance($sysId)
+    {
         if (isset(self::$INSTANCES[$sysId])) {
             return self::$INSTANCES[$sysId];
         }
@@ -63,12 +66,12 @@ class Router {
 
     /**
      * Set region.
-     *
      * See `RestAPI\Region` for available regions.
      *
      * @param mixed $region
      */
-    public function setRegion($region) {
+    public function setRegion($region)
+    {
         if (is_numeric($region)) {
             $this->region = $region;
         } else {
@@ -83,14 +86,16 @@ class Router {
      *
      * @return null|mixed
      */
-    public function getRoute($server_key) {
+    public function getRoute($server_key)
+    {
         $this->validate_server_key($server_key);
         $routes = $this->getDefaultRoutes();
 
         return isset($routes[$server_key]) ? $routes[$server_key] : null;
     }
 
-    private function validate_server_key($server_key) {
+    private function validate_server_key($server_key)
+    {
         $routes = $this->getDefaultRoutes();
         if (!isset($routes[$server_key])) {
             throw new \InvalidArgumentException('Invalid server key.');
@@ -100,7 +105,8 @@ class Router {
     /**
      * Fallback default routes, if app router not available.
      */
-    private function getDefaultRoutes() {
+    private function getDefaultRoutes()
+    {
         $host = self::$DEFAULT_REGION_ROUTE[$this->region];
         $iv = self::$DEFAULT_REGION_IV[$this->region];
         // 是否内网服务器
@@ -120,22 +126,23 @@ class Router {
 
 /**
  * Route cache.
- *
  * Ideally we should use ACPu for caching, but it can be inconvenient to
  * install, esp. on Windows[1], thus we implement a naive file based
  * cache.
- *
  * [1]: https://stackoverflow.com/a/28124144/108112
  */
-class RouteCache {
+class RouteCache
+{
     private $filename;
     private $_cache;
 
-    private function __construct($id) {
-        $this->filename = sys_get_temp_dir()."/restapi_route_{$id}.json";
+    private function __construct($id)
+    {
+        $this->filename = sys_get_temp_dir() . "/restapi_route_{$id}.json";
     }
 
-    public static function create($id) {
+    public static function create($id)
+    {
         return new self($id);
     }
 
@@ -144,7 +151,8 @@ class RouteCache {
      *
      * @param mixed $array
      */
-    public function write($array) {
+    public function write($array)
+    {
         $body = json_encode($array);
         if (false === file_put_contents($this->filename, $body, LOCK_EX)) {
             error_log("WARNING: failed to write route cache ({$this->filename}), performance may be degraded.");
@@ -156,7 +164,8 @@ class RouteCache {
     /**
      * Read routes either from cache or file, return json_decoded array.
      */
-    public function read() {
+    public function read()
+    {
         if ($this->_cache) {
             return $this->_cache;
         }
@@ -170,7 +179,8 @@ class RouteCache {
         return null;
     }
 
-    private function readFile() {
+    private function readFile()
+    {
         if (file_exists($this->filename)) {
             $fp = fopen($this->filename, 'rb');
             $body = null;
