@@ -8,7 +8,7 @@ class RouterService
     const API_SERVER_KEY = 'api_server';
     const IV_KEY = 'iv';
     const IS_PRIVATE_ZONE_KEY = 'is_private_zone';
-    const CONST_IS_PRIVATE_ZONE_SERVER = 'IS_PRIVATE_ZONE_SERVER';
+    const CONST_IS_PRIVATE_ZONE_SERVER = 'DEPLOY_IS_VPC_ZONE';
     private static $INSTANCES;
     private $sysId;
     private $region;
