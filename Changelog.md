@@ -1,4 +1,8 @@
 
+0.5.1 发布日期：2020-11-13
+----
+* FILTER_SANITIZE_MAGIC_QUOTES在7.3版本中被弃用
+
 0.5 发布日期：2020-09-29
 ----
 * 更改判断内网环境变量为DEPLOY_IS_VPC_ZONE

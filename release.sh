@@ -22,5 +22,8 @@ mv  Changelog.md.0 Changelog.md
 perl -pi -e "s/const VERSION = .*\;/const VERSION = \'$version\'\;/" \
     src/RestAPI/Client.php
 
+perl -pi -e "s/const VERSION = .*\;/const VERSION = \'$version\'\;/" \
+    src/RestAPI/RestServiceClient.php
+
 echo "Done! Ready to commit and release $version!"
 

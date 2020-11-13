@@ -52,8 +52,12 @@ abstract class SimpleUploader
             }
             $fieldname = static::getFileFieldName();
             // escape quotes in file name
-            $filename = filter_var($file['name'], FILTER_SANITIZE_MAGIC_QUOTES);
-
+            // 2020-11-13 FILTER_SANITIZE_MAGIC_QUOTES在7.3版本中被弃用
+            if (version_compare(PHP_VERSION, '7.3', '<')) {
+                $filename = filter_var($file['name'], FILTER_SANITIZE_MAGIC_QUOTES);
+            }else {
+                $filename = filter_var($file['name'], FILTER_SANITIZE_ADD_SLASHES);
+            }
             $body .= "--{$boundary}\r\n";
             $body .= "Content-Disposition: form-data; name=\"{$fieldname}\"; filename=\"{$filename}\"\r\n";
             $body .= "Content-Type: {$mimeType}\r\n\r\n";
