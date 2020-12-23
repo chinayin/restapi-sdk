@@ -322,8 +322,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not
      *
-     * @throws RestAPIException
      * @return mixed
+     * @throws RestAPIException
      */
     public static function request(
         $method,
@@ -370,8 +370,8 @@ class RestServiceClient
         curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($req, CURLOPT_TIMEOUT, self::$apiTimeout);
         // curl_setopt($req, CURLINFO_HEADER_OUT, true);
-        // 返回 response_header, 如果不为 true, 只会获得响应的正文
-        // curl_setopt($req, CURLOPT_HEADER, true);
+        // 2020-12-23 返回 response_header, 如果不为 true, 只会获得响应的正文
+        curl_setopt($req, CURLOPT_HEADER, true);
         curl_setopt($req, CURLOPT_ENCODING, '');
         switch ($method) {
             case 'GET':
@@ -400,14 +400,17 @@ class RestServiceClient
             error_log("[DEBUG] HEADERS {$unionId}:" . json_encode($headersList));
             error_log("[DEBUG] REQUEST {$unionId}: {$method} {$url} {$json}");
         }
-        // list($headers, $resp) = explode("\r\n\r\n", curl_exec($req), 2);
-        $resp = curl_exec($req);
+        $response = curl_exec($req);
+        $curlInfo = curl_getinfo($req);
         $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
         $respType = curl_getinfo($req, CURLINFO_CONTENT_TYPE);
         $error = curl_error($req);
         $errno = curl_errno($req);
-        $respInfo = curl_getinfo($req);
         curl_close($req);
+        // 2020-12-23 带有header的response获取
+        [$headers, $resp] = self::parseResponse($response, $unionId);
+        // 获取header中的request_id
+        $request_id = isset($headers['x-request-id']) ? $headers['x-request-id'] : '';
         if (self::$debugMode) {
             error_log("[DEBUG] RESPONSE {$unionId}: {$resp}");
         }
@@ -417,20 +420,27 @@ class RestServiceClient
           *  - rest api error
           */
         if ($errno > 0) {
-            self::log($unionId, 'exception', "CURL connection (${url}) error: ${errno} ${error}");
+            self::log($unionId, 'exception', "{$request_id},CURL connection (${url}) error: ${errno} ${error}");
             throw new \RuntimeException(
-                "CURL connection (${url}) error: ${errno} ${error}",
+                "{$request_id},CURL connection (${url}) error: ${errno} ${error}",
                 $errno
             );
         }
+        // 非正常请求
+        if (empty($respCode) || $respCode !== 200) {
+            $respCodeText = HttpCode::getText($respCode);
+            self::log($unionId, 'exception', "{$request_id},$respCode {$respCodeText} (${url})");
+            throw new RestAPIException("{$request_id},$respCode {$respCodeText}", -1);
+        }
+        // 正常请求,单格式不对
         if (false !== strpos($respType, 'text/html')) {
-            self::log($unionId, 'exception', "Bad request (${url})");
-            throw new RestAPIException('Bad request', -1);
+            self::log($unionId, 'exception', "{$request_id},Bad request (${url})");
+            throw new RestAPIException("{$request_id},Bad request", -1);
         }
         $data = json_decode($resp, true);
-        $request_id = empty($data) ? '' : self::parseRequestId($data);
+        empty($request_id) && $request_id = (empty($data) ? '-' : self::parseRequestId($data));
         self::log($unionId, 'response',
-            $request_id . ',' . json_encode(self::parseCurlInfo($respInfo), JSON_UNESCAPED_UNICODE));
+            $request_id . ',' . json_encode(self::parseCurlInfo($curlInfo), JSON_UNESCAPED_UNICODE));
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
@@ -439,6 +449,35 @@ class RestServiceClient
             throw $e;
         }
         return $data;
+    }
+
+    private static function parseResponse($response, $unionId)
+    {
+        if (($pos = strpos($response, "\r\n\r\n")) === false) {
+            // Crap!
+            self::log($unionId, 'exception', "Missing header/body separator");
+            throw new RestAPIException('Missing header/body separator', -1);
+        }
+        $headers = substr($response, 0, $pos);
+        $body = substr($response, $pos + strlen("\n\r\n\r"));
+        // Pretend CRLF = LF for compatibility (RFC 2616, section 19.3)
+        $headers = str_replace("\r\n", "\n", $headers);
+        // Unfold headers (replace [CRLF] 1*( SP | HT ) with SP) as per RFC 2616 (section 2.2)
+        $headers = preg_replace('/\n[ \t]/', ' ', $headers);
+        $headers = explode("\n", $headers);
+        preg_match('#^HTTP/(1\.\d)[ \t]+(\d+)#i', array_shift($headers), $matches);
+        if (empty($matches)) {
+            self::log($unionId, 'exception', "Response could not be parsed");
+            throw new RestAPIException('Response could not be parsed', -1);
+        }
+        $header2 = [];
+        foreach ($headers as $header) {
+            [$key, $value] = explode(':', $header, 2);
+            $value = trim($value);
+            preg_replace('#(\s+)#i', ' ', $value);
+            $header2[$key] = $value;
+        }
+        return [$header2, $body];
     }
 
     /**
@@ -453,8 +492,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function get(
@@ -484,8 +523,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function post(
@@ -515,8 +554,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function put(
@@ -544,8 +583,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function delete(
@@ -572,8 +611,8 @@ class RestServiceClient
      * @param null  $useMasterKey
      *                            Use master key or not, optional
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function batch(
@@ -614,8 +653,8 @@ class RestServiceClient
      * @param mixed $filepath
      * @param mixed $params
      *
-     * @throws RestAPIException
      * @return array
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function upload(

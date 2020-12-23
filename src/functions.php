@@ -35,7 +35,7 @@ function RestServicePost($path, $params, $headers = [])
  * @return array
  * @throws \RestAPI\RestAPIException
  */
-function RestServiceGet($path, $params, $headers = [])
+function RestServiceGet($path, $params = null, $headers = [])
 {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
