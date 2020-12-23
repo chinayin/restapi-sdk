@@ -54,6 +54,25 @@ function RestServiceGet($path, $params = null, $headers = [])
     return \RestAPI\RestServiceClient::get($path, $params, $headers);
 }
 
+/**
+ * @param $path
+ *
+ * @return string
+ */
+function RestServiceBuildRequestUrl($path)
+{
+    \RestAPI\RestServiceClient::initialize(
+        \RestAPI\Helper::getEnv('restapi.sys_id'),
+        \RestAPI\Helper::getEnv('restapi.secret_key'),
+        \RestAPI\Helper::getEnv('restapi.region')
+    );
+    // server_url
+    if ($serverUrl = \RestAPI\Helper::getEnv('restapi.server_url')) {
+        empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+    }
+    return \RestAPI\RestServiceClient::buildRequestUrl($path);
+}
+
 function SsoClientInitialize($accessToken, $headers = [])
 {
     \RestAPI\Client::initialize(

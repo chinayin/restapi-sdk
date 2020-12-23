@@ -451,6 +451,16 @@ class RestServiceClient
         return $data;
     }
 
+    /**
+     * @param $path
+     *
+     * @return string
+     */
+    public static function buildRequestUrl($path)
+    {
+        return self::getAPIEndPoint() . '/' . ltrim($path, '/');
+    }
+
     private static function parseResponse($response, $unionId)
     {
         if (($pos = strpos($response, "\r\n\r\n")) === false) {
