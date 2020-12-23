@@ -103,6 +103,9 @@ $resp = RestServicePost('/api/oauth/checklogin',['username'=>'a']);
 // 超时时间设置(2s)
 $resp = RestServiceGet('/api/oauth/get',[],['timeout'=>2]);
 
+// 依照本地环境生成服务网址
+$url = RestServiceBuildRequestUrl('/api/oauth/get');
+
 ```
 
 ##### env配置
