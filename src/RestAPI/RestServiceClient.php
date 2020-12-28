@@ -408,9 +408,9 @@ class RestServiceClient
         $errno = curl_errno($req);
         curl_close($req);
         // 2020-12-23 带有header的response获取
-        [$headers, $resp] = self::parseResponse($response, $unionId);
+        [$headers, $resp] = RequestHelper::parse_response($response, $unionId);
         // 获取header中的request_id
-        $request_id = isset($headers['x-request-id']) ? $headers['x-request-id'] : '';
+        $request_id = RequestHelper::parse_x_request_id($headers);
         if (self::$debugMode) {
             error_log("[DEBUG] RESPONSE {$unionId}: {$resp}");
         }
@@ -438,9 +438,9 @@ class RestServiceClient
             throw new RestAPIException("{$request_id},Bad request", -1);
         }
         $data = json_decode($resp, true);
-        empty($request_id) && $request_id = (empty($data) ? '-' : self::parseRequestId($data));
+        empty($request_id) && $request_id = (empty($data) ? '-' : RequestHelper::parse_request_id($data));
         self::log($unionId, 'response',
-            $request_id . ',' . json_encode(self::parseCurlInfo($curlInfo), JSON_UNESCAPED_UNICODE));
+            $request_id . ',' . json_encode(RequestHelper::parse_curlinfo($curlInfo), JSON_UNESCAPED_UNICODE));
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = isset($data['error_code']) ? $data['error_code'] : -1;
@@ -459,35 +459,6 @@ class RestServiceClient
     public static function buildRequestUrl($path)
     {
         return self::getAPIEndPoint() . '/' . ltrim($path, '/');
-    }
-
-    private static function parseResponse($response, $unionId)
-    {
-        if (($pos = strpos($response, "\r\n\r\n")) === false) {
-            // Crap!
-            self::log($unionId, 'exception', "Missing header/body separator");
-            throw new RestAPIException('Missing header/body separator', -1);
-        }
-        $headers = substr($response, 0, $pos);
-        $body = substr($response, $pos + strlen("\n\r\n\r"));
-        // Pretend CRLF = LF for compatibility (RFC 2616, section 19.3)
-        $headers = str_replace("\r\n", "\n", $headers);
-        // Unfold headers (replace [CRLF] 1*( SP | HT ) with SP) as per RFC 2616 (section 2.2)
-        $headers = preg_replace('/\n[ \t]/', ' ', $headers);
-        $headers = explode("\n", $headers);
-        preg_match('#^HTTP/(1\.\d)[ \t]+(\d+)#i', array_shift($headers), $matches);
-        if (empty($matches)) {
-            self::log($unionId, 'exception', "Response could not be parsed");
-            throw new RestAPIException('Response could not be parsed', -1);
-        }
-        $header2 = [];
-        foreach ($headers as $header) {
-            [$key, $value] = explode(':', $header, 2);
-            $value = trim($value);
-            preg_replace('#(\s+)#i', ' ', $value);
-            $header2[$key] = $value;
-        }
-        return [$header2, $body];
     }
 
     /**
@@ -824,25 +795,6 @@ class RestServiceClient
                 'please specify application key ' .
                 'with Client::initialize.');
         }
-    }
-
-    private static function parseRequestId($data)
-    {
-        return isset($data['request_id']) ? $data['request_id'] : '';
-    }
-
-    private static function parseCurlInfo($r)
-    {
-        return [
-            'http_code' => $r['http_code'] ?? '',
-            'total_time' => number_format($r['total_time'] ?? 0, 3),
-            'primary_ip' => $r['primary_ip'] ?? '',
-            'size_download' => $r['size_download'] ?? '',
-            'namelookup_time' => number_format($r['namelookup_time'] ?? 0, 3),
-            'connect_time' => number_format($r['connect_time'] ?? 0, 3),
-            'pretransfer_time' => number_format($r['pretransfer_time'] ?? 0, 3),
-            'starttransfer_time' => number_format($r['starttransfer_time'] ?? 0, 3),
-        ];
     }
 
     /**
