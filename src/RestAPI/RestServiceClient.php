@@ -407,6 +407,14 @@ class RestServiceClient
         $error = curl_error($req);
         $errno = curl_errno($req);
         curl_close($req);
+        // 2020-12-29 当curl_exec返回false
+        if (false === $response) {
+            self::log($unionId, 'exception', "-,CURL connection (${url}) curl_exec error: ${errno} ${error}");
+            throw new \RuntimeException(
+                "-,CURL connection (${url}) curl_exec error: ${errno} ${error}",
+                $errno
+            );
+        }
         // 2020-12-23 带有header的response获取
         [$headers, $resp] = RequestHelper::parse_response($response, $unionId);
         // 获取header中的request_id
