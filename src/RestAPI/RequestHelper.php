@@ -36,8 +36,13 @@ class RequestHelper
 //            self::log($unionId, 'exception', "Missing header/body separator");
             throw new \RuntimeException('Missing header/body separator', -1);
         }
-        $headers = substr($response, 0, $pos);
-        $body = substr($response, $pos + strlen("\n\r\n\r"));
+        // 2021-01-14 当出现HTTP/1.1 100 Continue时就无解
+//        $headers = substr($response, 0, $pos);
+//        $body = substr($response, $pos + strlen("\n\r\n\r"));
+        $array = explode("\r\n\r\n", $response);
+        $body = array_pop($array);
+        $headers = array_pop($array);
+        unset($array);
         // Pretend CRLF = LF for compatibility (RFC 2616, section 19.3)
         $headers = str_replace("\r\n", "\n", $headers);
         // Unfold headers (replace [CRLF] 1*( SP | HT ) with SP) as per RFC 2616 (section 2.2)
