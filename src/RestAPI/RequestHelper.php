@@ -48,8 +48,11 @@ class RequestHelper
         // Unfold headers (replace [CRLF] 1*( SP | HT ) with SP) as per RFC 2616 (section 2.2)
         $headers = preg_replace('/\n[ \t]/', ' ', $headers);
         $headers = explode("\n", $headers);
-        preg_match('#^HTTP/(1\.\d)[ \t]+(\d+)#i', array_shift($headers), $matches);
-        if (empty($matches)) {
+        // 2021-02-24 兼容http1和http2
+        $topline = array_shift($headers);
+        preg_match('#^HTTP/(1.\d)[ \t]+(\d+)#i', $topline, $matches);
+        preg_match('#^HTTP/(\d)[ \t]+(\d+)#i', $topline, $matches2);
+        if (empty($matches) && empty($matches2)) {
 //            self::log($unionId, 'exception', "Response could not be parsed");
             throw new \RuntimeException('Response could not be parsed', -1);
         }
