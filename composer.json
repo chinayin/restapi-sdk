@@ -40,14 +40,14 @@
     }
   },
   "config": {
+    "sort-packages": true,
     "preferred-install": "dist",
     "optimize-autoloader": true
   },
   "prefer-stable": true,
-  "minimum-stability": "dev",
   "extra": {
     "branch-alias": {
-      "dev-master": "0.4-dev"
+      "dev-master": "0.6"
     }
   },
   "scripts": {
