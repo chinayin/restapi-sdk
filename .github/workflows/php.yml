@@ -23,7 +23,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         tools: pecl
-        extensions: mbstring, dom
+        extensions: mbstring, dom, xdebug
 
     - name: Get composer cache directory
       id: composer-cache
