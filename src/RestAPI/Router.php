@@ -25,7 +25,7 @@ class Router
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
         Region::CN => 'ssoapi.uhomes.local',
         Region::TESTING => 'ssoapi.uhomes-test.local',
-        Region::UAT => 'ssoapi-uat.uhomes-test.local',
+        Region::UAT => 'ssoapi.uhomes-uat.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
