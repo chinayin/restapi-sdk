@@ -52,7 +52,7 @@ buildNumber.properties
 composer.lock
 
 # PhpCsFixer #
-.php_cs.cache
+.php-cs-fixer.cache
 
 # Local Config #
 .env
