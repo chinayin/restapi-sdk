@@ -20,6 +20,7 @@ class RouterService
         Region::CN => 'srvapi.uhomes.com',
         Region::HK => 'srvapi-hk.uhomes.com',
         Region::US => 'srvapi-us.uhomes.com',
+        Region::GB => 'srvapi-gb.uhomes.com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
@@ -35,6 +36,7 @@ class RouterService
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
+        Region::GB => 'uhomescomtianlei',
     ];
 
     private function __construct($sysId)

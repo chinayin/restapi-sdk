@@ -15,6 +15,7 @@ abstract class Region
     const CN = 11;
     const HK = 12;
     const US = 13;
+    const GB = 14;
 
     /**
      * Create region from name, such as `CN`, `HK`.

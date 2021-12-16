@@ -20,6 +20,7 @@ class Router
         Region::CN => 'ssoapi.uhomes.com',
         Region::HK => 'ssoapi-hk.uhomes.com',
         Region::US => 'ssoapi-us.uhomes.com',
+        Region::GB => 'ssoapi-gb.uhomes.com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
@@ -35,6 +36,7 @@ class Router
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
+        Region::GB => 'uhomescomtianlei',
     ];
 
     private function __construct($sysId)
