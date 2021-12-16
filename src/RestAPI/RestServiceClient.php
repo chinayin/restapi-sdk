@@ -122,9 +122,9 @@ class RestServiceClient
     /**
      * Initialize application key and settings.
      *
-     * @param string $sysId     Application ID
+     * @param string $sysId Application ID
      * @param string $secretKey Application key
-     * @param string $region    Application region
+     * @param string $region Application region
      */
     public static function initialize(string $sysId, string $secretKey, string $region = null)
     {
@@ -247,6 +247,11 @@ class RestServiceClient
         self::$sysMasterKey = $sysMasterKey;
     }
 
+    public static function getSysMasterKey()
+    {
+        return self::$sysMasterKey;
+    }
+
     /**
      * Set timeout
      *
@@ -319,7 +324,7 @@ class RestServiceClient
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not
      *
      * @return mixed
@@ -482,7 +487,7 @@ class RestServiceClient
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -513,7 +518,7 @@ class RestServiceClient
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -544,7 +549,7 @@ class RestServiceClient
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -573,7 +578,7 @@ class RestServiceClient
      *                            Request path (without version string)
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -601,7 +606,7 @@ class RestServiceClient
      *                            Array of requests in batch op
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -641,7 +646,7 @@ class RestServiceClient
      *                            Request path (without version string)
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      * @param mixed $filepath
      * @param mixed $params
@@ -786,13 +791,15 @@ class RestServiceClient
         }
         $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
 
-        return base64_encode(openssl_encrypt(
-            http_build_query($data),
-            'AES-256-CBC',
-            self::$secretKey,
-            OPENSSL_RAW_DATA,
-            $iv
-        ));
+        return base64_encode(
+            openssl_encrypt(
+                http_build_query($data),
+                'AES-256-CBC',
+                self::$secretKey,
+                OPENSSL_RAW_DATA,
+                $iv
+            )
+        );
     }
 
     /**
@@ -800,12 +807,14 @@ class RestServiceClient
      */
     private static function assertInitialized()
     {
-        if (!isset(self::$sysId) &&
-            !isset(self::$secretKey) &&
-            !isset(self::$sysMasterKey)) {
-            throw new \RuntimeException('Client is not initialized, ' .
+        if (empty(self::$sysId) &&
+            empty(self::$secretKey) &&
+            empty(self::$sysMasterKey)) {
+            throw new \RuntimeException(
+                'Client is not initialized, ' .
                 'please specify application key ' .
-                'with Client::initialize.');
+                'with Client::initialize.'
+            );
         }
     }
 

@@ -6,7 +6,7 @@ parameters:
 			path: src/RestAPI/RestServiceClient.php
 
 		-
-			message: "#^Parameter \\#1 \\$autoload_function of function spl_autoload_register expects callable\\(string\\)\\: void, Closure\\(mixed\\)\\: mixed given\\.$#"
-			count: 1
-			path: src/autoload.php
+			message: "#^Unsafe access to private property RestAPI\\\\Storage\\\\SessionStorage\\:\\:\\$storageKey through static\\:\\:\\.$#"
+			count: 7
+			path: src/RestAPI/Storage/SessionStorage.php
 

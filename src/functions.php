@@ -21,8 +21,9 @@ function RestServicePost($path, $params, array $headers = []): array
         unset($headers['timeout']);
     }
     // server_url
-    if ($serverUrl = \RestAPI\Helper::getEnv('restapi.server_url')) {
-        empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
     }
     return \RestAPI\RestServiceClient::post($path, $params, $headers);
 }
@@ -48,8 +49,9 @@ function RestServiceGet($path, $params = null, array $headers = []): array
         unset($headers['timeout']);
     }
     // server_url
-    if ($serverUrl = \RestAPI\Helper::getEnv('restapi.server_url')) {
-        empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
     }
     return \RestAPI\RestServiceClient::get($path, $params, $headers);
 }
@@ -67,8 +69,9 @@ function RestServiceBuildRequestUrl($path): string
         \RestAPI\Helper::getEnv('restapi.region')
     );
     // server_url
-    if ($serverUrl = \RestAPI\Helper::getEnv('restapi.server_url')) {
-        empty($serverUrl) || \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
     }
     return \RestAPI\RestServiceClient::buildRequestUrl($path);
 }
@@ -87,8 +90,9 @@ function SsoClientInitialize($accessToken, $headers = [])
         unset($headers['timeout']);
     }
     // server_url
-    if ($serverUrl = \RestAPI\Helper::getEnv('restapi.server_url')) {
-        empty($serverUrl) || \RestAPI\Client::setServerUrl($serverUrl);
+    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        \RestAPI\Client::setServerUrl($serverUrl);
     }
 }
 

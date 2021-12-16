@@ -120,7 +120,9 @@ class UhzUploader extends SimpleUploader
             $this->setUserId((int)$params['user_id']);
             unset($params['user_id']);
         }
-        empty($params) or $this->post_params = $params;
+        if (!empty($params)) {
+            $this->post_params = $params;
+        }
         return $this;
     }
 

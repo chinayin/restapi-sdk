@@ -125,6 +125,14 @@ class Router
             self::IS_PRIVATE_ZONE_KEY => $isPrivateZoneServer,
         ];
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSysId()
+    {
+        return $this->sysId;
+    }
 }
 
 /**

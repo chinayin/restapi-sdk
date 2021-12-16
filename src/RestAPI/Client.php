@@ -120,8 +120,8 @@ class Client
     /**
      * Initialize application key and settings.
      *
-     * @param string $sysId       Application ID
-     * @param string $secretKey   Application key
+     * @param string $sysId Application ID
+     * @param string $secretKey Application key
      * @param string $accessToken Application accesstoken
      */
     public static function initialize(string $sysId, string $secretKey, string $accessToken)
@@ -243,6 +243,11 @@ class Client
         self::$sysMasterKey = $sysMasterKey;
     }
 
+    public static function getSysMasterKey()
+    {
+        return self::$sysMasterKey;
+    }
+
     /**
      * Set timeout
      *
@@ -315,7 +320,7 @@ class Client
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not
      *
      * @return mixed
@@ -478,7 +483,7 @@ class Client
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -509,7 +514,7 @@ class Client
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -540,7 +545,7 @@ class Client
      *                            Payload data
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -569,7 +574,7 @@ class Client
      *                            Request path (without version string)
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -597,7 +602,7 @@ class Client
      *                            Array of requests in batch op
      * @param array $headers
      *                            Optional headers
-     * @param null  $useMasterKey
+     * @param null $useMasterKey
      *                            Use master key or not, optional
      *
      * @return array
@@ -716,13 +721,15 @@ class Client
         }
         $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
 
-        return base64_encode(openssl_encrypt(
-            http_build_query($data),
-            'AES-256-CBC',
-            self::$secretKey,
-            OPENSSL_RAW_DATA,
-            $iv
-        ));
+        return base64_encode(
+            openssl_encrypt(
+                http_build_query($data),
+                'AES-256-CBC',
+                self::$secretKey,
+                OPENSSL_RAW_DATA,
+                $iv
+            )
+        );
     }
 
     /**
@@ -730,12 +737,14 @@ class Client
      */
     private static function assertInitialized()
     {
-        if (!isset(self::$sysId) &&
-            !isset(self::$secretKey) &&
-            !isset(self::$sysMasterKey)) {
-            throw new \RuntimeException('Client is not initialized, ' .
+        if (empty(self::$sysId) &&
+            empty(self::$secretKey) &&
+            empty(self::$sysMasterKey)) {
+            throw new \RuntimeException(
+                'Client is not initialized, ' .
                 'please specify application key ' .
-                'with Client::initialize.');
+                'with Client::initialize.'
+            );
         }
     }
 

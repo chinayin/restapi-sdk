@@ -15,3 +15,4 @@ parameters:
     ignoreErrors:
         - '#Function __LOG_MESSAGE.* not found\.#'
         - '#PHPDoc tag .* has invalid value.*#'
+        - '#Constant FILTER_SANITIZE_ADD_SLASHES not found\.#'
