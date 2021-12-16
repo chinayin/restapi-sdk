@@ -17,7 +17,7 @@ abstract class SimpleUploader
      *
      * @return SimpleUploader
      */
-    public static function createUploader($provider)
+    public static function createUploader(string $provider): SimpleUploader
     {
         if ('uhz' === $provider) {
             return new UhzUploader();
@@ -35,7 +35,7 @@ abstract class SimpleUploader
      *
      * @return string Multipart encoded string
      */
-    public function multipartEncode($file, $params, $boundary)
+    public function multipartEncode(array $file, array $params, string $boundary): string
     {
         $body = "\r\n";
 
@@ -55,7 +55,7 @@ abstract class SimpleUploader
             // 2020-11-13 FILTER_SANITIZE_MAGIC_QUOTES在7.3版本中被弃用
             if (version_compare(PHP_VERSION, '7.3', '<')) {
                 $filename = filter_var($file['name'], FILTER_SANITIZE_MAGIC_QUOTES);
-            }else {
+            } else {
                 $filename = filter_var($file['name'], FILTER_SANITIZE_ADD_SLASHES);
             }
             $body .= "--{$boundary}\r\n";
@@ -76,7 +76,7 @@ abstract class SimpleUploader
      * @param string $uploadUrl File provider url
      * @param string $authToken Auth token for file provider
      */
-    public function initialize($uploadUrl, $authToken)
+    public function initialize(string $uploadUrl, string $authToken)
     {
         $this->uploadUrl = $uploadUrl;
         $this->authToken = $authToken;
@@ -102,7 +102,7 @@ abstract class SimpleUploader
      *
      * @return string
      */
-    protected static function getFileFieldName()
+    protected static function getFileFieldName(): string
     {
         return 'file';
     }

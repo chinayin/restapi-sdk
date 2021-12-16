@@ -10,7 +10,8 @@ namespace RestAPI\Storage;
  * storing session token of a logged-in User.
  *
  */
-interface IStorage {
+interface IStorage
+{
     /**
      * Set value by key
      *
@@ -18,7 +19,7 @@ interface IStorage {
      * @param mixed  $val
      * @return $this
      */
-    public function set($key, $val);
+    public function set(string $key, $val);
 
     /**
      * Get value by key
@@ -26,7 +27,7 @@ interface IStorage {
      * @param string $key
      * @return mixed
      */
-    public function get($key);
+    public function get(string $key);
 
     /**
      * Remove key from storage
@@ -34,7 +35,7 @@ interface IStorage {
      * @param string $key
      * @return $this
      */
-    public function remove($key);
+    public function remove(string $key);
 
     /**
      * Clear all data in storage
@@ -43,4 +44,3 @@ interface IStorage {
      */
     public function clear();
 }
-

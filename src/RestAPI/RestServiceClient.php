@@ -18,7 +18,7 @@ class RestServiceClient
     /**
      * Client version.
      */
-    const VERSION = '0.6.8';
+    public const VERSION = '0.6.8';
 
     /**
      * Is in production or not.
@@ -126,7 +126,7 @@ class RestServiceClient
      * @param string $secretKey Application key
      * @param string $region    Application region
      */
-    public static function initialize($sysId, $secretKey, $region = null)
+    public static function initialize(string $sysId, string $secretKey, string $region = null)
     {
         self::$sysId = $sysId;
         self::$secretKey = $secretKey;
@@ -157,7 +157,7 @@ class RestServiceClient
      *
      * @return string
      */
-    public static function getVersionString()
+    public static function getVersionString(): string
     {
         return 'RESTAPI-SDK/' . self::VERSION;
     }
@@ -179,7 +179,7 @@ class RestServiceClient
      *
      * @param bool $flag Default false
      */
-    public static function useProduction($flag)
+    public static function useProduction(bool $flag)
     {
         self::$isProduction = $flag ? true : false;
     }
@@ -190,7 +190,7 @@ class RestServiceClient
      *
      * @param bool $flag Default false
      */
-    public static function setDebug($flag)
+    public static function setDebug(bool $flag)
     {
         self::$debugMode = $flag ? true : false;
     }
@@ -200,7 +200,7 @@ class RestServiceClient
      *
      * @param bool $flag
      */
-    public static function useMasterKey($flag)
+    public static function useMasterKey(bool $flag)
     {
         self::$useMasterKey = $flag ? true : false;
     }
@@ -212,7 +212,7 @@ class RestServiceClient
      *
      * @param string $url
      */
-    public static function setServerUrl($url)
+    public static function setServerUrl(string $url)
     {
         self::$serverUrl = rtrim($url, '/');
     }
@@ -222,7 +222,7 @@ class RestServiceClient
      *
      * @param string $clientIp
      */
-    public static function setClientIp($clientIp)
+    public static function setClientIp(string $clientIp)
     {
         self::$clientIp = $clientIp;
     }
@@ -252,7 +252,7 @@ class RestServiceClient
      *
      * @param int $timeout Default 15
      */
-    public static function setTimeout($timeout)
+    public static function setTimeout(int $timeout)
     {
         self::$apiTimeout = $timeout;
     }
@@ -264,7 +264,7 @@ class RestServiceClient
      *
      * @return string
      */
-    public static function getAPIEndPoint()
+    public static function getAPIEndPoint(): string
     {
         if ($url = self::$serverUrl) {
             return $url . '/' . self::$apiVersion;
@@ -285,7 +285,7 @@ class RestServiceClient
      *
      * @return array
      */
-    public static function buildHeaders($useMasterKey)
+    public static function buildHeaders(?bool $useMasterKey): array
     {
         if (null === $useMasterKey) {
             $useMasterKey = self::$useMasterKey;
@@ -329,14 +329,14 @@ class RestServiceClient
         $method,
         $path,
         $data,
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
     ) {
         self::assertInitialized();
         $url = self::getAPIEndPoint();
         $unionId = rand(100, 999);
         // 强制/开头的path
-        if (0 !== strpos($path, '/')) {
+        if (!str_starts_with($path, '/')) {
             throw new \RuntimeException(
                 "${path} is not start with /",
                 -1
@@ -353,13 +353,15 @@ class RestServiceClient
             $headers = array_merge($defaultHeaders, $headers);
         }
         $json = null;
-        if (false !== strpos($headers['Content-Type'], '/json')) {
+        if (str_contains($headers['Content-Type'], '/json')) {
             $json = json_encode($data);
         }
 
         // Build headers list in HTTP format
         $headersList = array_map(
-            function ($key, $val) { return "${key}: ${val}"; },
+            function ($key, $val) {
+                return "${key}: ${val}";
+            },
             array_keys($headers),
             $headers
         );
@@ -389,7 +391,6 @@ class RestServiceClient
                 curl_setopt($req, CURLOPT_POSTFIELDS, $json);
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
                 break;
-            // no break
             case 'DELETE':
                 curl_setopt($req, CURLOPT_CUSTOMREQUEST, $method);
                 break;
@@ -441,17 +442,20 @@ class RestServiceClient
             throw new RestAPIException("{$request_id},$respCode {$respCodeText}", -1);
         }
         // 正常请求,单格式不对
-        if (false !== strpos($respType, 'text/html')) {
+        if (str_contains($respType, 'text/html')) {
             self::log($unionId, 'exception', "{$request_id},Bad request (${url})");
             throw new RestAPIException("{$request_id},Bad request", -1);
         }
         $data = json_decode($resp, true);
         empty($request_id) && $request_id = (empty($data) ? '-' : RequestHelper::parse_request_id($data));
-        self::log($unionId, 'response',
-            $request_id . ',' . json_encode(RequestHelper::parse_curlinfo($curlInfo), JSON_UNESCAPED_UNICODE));
+        self::log(
+            $unionId,
+            'response',
+            $request_id . ',' . json_encode(RequestHelper::parse_curlinfo($curlInfo), JSON_UNESCAPED_UNICODE)
+        );
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
-            $code = isset($data['error_code']) ? $data['error_code'] : -1;
+            $code = $data['error_code'] ?? -1;
             $e = new RestAPIException("{$data['message']}", $code);
             $e->setErrorData($data);
             throw $e;
@@ -464,7 +468,7 @@ class RestServiceClient
      *
      * @return string
      */
-    public static function buildRequestUrl($path)
+    public static function buildRequestUrl($path): string
     {
         return self::getAPIEndPoint() . '/' . ltrim($path, '/');
     }
@@ -488,9 +492,9 @@ class RestServiceClient
     public static function get(
         $path,
         $data = null,
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         return self::request(
             'GET',
             $path,
@@ -519,9 +523,9 @@ class RestServiceClient
     public static function post(
         $path,
         $data,
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         return self::request(
             'POST',
             $path,
@@ -550,9 +554,9 @@ class RestServiceClient
     public static function put(
         $path,
         $data,
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         return self::request(
             'PUT',
             $path,
@@ -578,9 +582,9 @@ class RestServiceClient
      */
     public static function delete(
         $path,
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         return self::request(
             'DELETE',
             $path,
@@ -605,10 +609,10 @@ class RestServiceClient
      * @see self::request()
      */
     public static function batch(
-        $requests,
-        $headers = [],
+        array $requests,
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         $response = self::post(
             '/batch',
             ['requests' => $requests],
@@ -650,13 +654,13 @@ class RestServiceClient
         $path,
         $filepath,
         $params = [],
-        $headers = [],
+        array $headers = [],
         $useMasterKey = null
-    ) {
+    ): array {
         self::assertInitialized();
         $url = self::getAPIEndPoint();
         // 强制/开头的path
-        if (0 !== strpos($path, '/')) {
+        if (!str_starts_with($path, '/')) {
             throw new \RuntimeException(
                 "${path} is not start with /",
                 -1
@@ -687,7 +691,7 @@ class RestServiceClient
         }
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
-            $code = isset($data['error_code']) ? $data['error_code'] : -1;
+            $code = $data['error_code'] ?? -1;
             $e = new RestAPIException("{$data['message']}", $code);
             $e->setErrorData($data);
             throw $e;
@@ -703,7 +707,7 @@ class RestServiceClient
      *
      * @return string
      */
-    public static function formatDate(\DateTime $date)
+    public static function formatDate(\DateTime $date): string
     {
         $utc = clone $date;
         $utc->setTimezone(new \DateTimezone('UTC'));
@@ -718,7 +722,7 @@ class RestServiceClient
      *
      * @return IStorage
      */
-    public static function getStorage()
+    public static function getStorage(): IStorage
     {
         return self::$storage;
     }
@@ -729,7 +733,7 @@ class RestServiceClient
      *
      * @param IStorage $storage
      */
-    public static function setStorage($storage)
+    public static function setStorage(IStorage $storage)
     {
         self::$storage = $storage;
     }
@@ -742,7 +746,7 @@ class RestServiceClient
      *
      * @return float|int
      */
-    public static function randomFloat($min = 0, $max = 1)
+    public static function randomFloat(int $min = 0, int $max = 1)
     {
         $M = mt_getrandmax();
 
@@ -757,7 +761,7 @@ class RestServiceClient
      *
      * @return string
      */
-    public static function randomString($length = 10)
+    public static function randomString($length = 10): string
     {
         return substr(str_shuffle('QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm'), 1, $length);
     }
@@ -767,7 +771,7 @@ class RestServiceClient
      *
      * @return string
      */
-    private static function buildHeaderSignature()
+    private static function buildHeaderSignature(): string
     {
         $data = [
             'sys_id' => self::$sysId,

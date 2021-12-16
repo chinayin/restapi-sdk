@@ -2,7 +2,8 @@
 
 namespace RestAPI;
 
-class MIMEType {
+class MIMEType
+{
     public static $knownTypes = [
         'ai' => 'application/postscript',
         'aif' => 'audio/x-aiff',
@@ -201,7 +202,8 @@ class MIMEType {
      *
      * @return null|string
      */
-    public static function getType($ext) {
+    public static function getType(string $ext): ?string
+    {
         if (isset(static::$knownTypes[$ext])) {
             return static::$knownTypes[$ext];
         }

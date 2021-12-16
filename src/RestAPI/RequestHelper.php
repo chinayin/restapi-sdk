@@ -4,15 +4,14 @@ namespace RestAPI;
 
 class RequestHelper
 {
-
     public static function parse_x_request_id($data)
     {
-        return isset($data['x-request-id']) ? $data['x-request-id'] : '';
+        return $data['x-request-id'] ?? '';
     }
 
     public static function parse_request_id($data)
     {
-        return isset($data['request_id']) ? $data['request_id'] : '';
+        return $data['request_id'] ?? '';
     }
 
     public static function parse_curlinfo($r)
@@ -86,7 +85,7 @@ class RequestHelper
      *
      * @return string Decoded body
      */
-    protected static function decode_chunked($data)
+    protected static function decode_chunked(string $data): string
     {
         if (!preg_match('/^([0-9a-f]+)(?:;(?:[\w-]*)(?:=(?:(?:[\w-]*)*|"(?:[^\r\n])*"))?)*\r\n/i', trim($data))) {
             return $data;
@@ -96,8 +95,11 @@ class RequestHelper
         $encoded = $data;
 
         while (true) {
-            $is_chunked = (bool)preg_match('/^([0-9a-f]+)(?:;(?:[\w-]*)(?:=(?:(?:[\w-]*)*|"(?:[^\r\n])*"))?)*\r\n/i',
-                $encoded, $matches);
+            $is_chunked = (bool)preg_match(
+                '/^([0-9a-f]+)(?:;(?:[\w-]*)(?:=(?:(?:[\w-]*)*|"(?:[^\r\n])*"))?)*\r\n/i',
+                $encoded,
+                $matches
+            );
             if (!$is_chunked) {
                 // Looks like it's not chunked after all
                 return $data;
@@ -128,7 +130,7 @@ class RequestHelper
      *
      * @return string Decompressed string
      */
-    public static function decompress($data)
+    public static function decompress(string $data): string
     {
         if (substr($data, 0, 2) !== "\x1f\x8b" && substr($data, 0, 2) !== "\x78\x9c") {
             // Not actually compressed. Probably cURL ruining this for us.
@@ -166,7 +168,7 @@ class RequestHelper
      * @since 2.8.1
      * @link  https://core.trac.wordpress.org/ticket/18273
      */
-    public static function compatible_gzinflate($gzData)
+    public static function compatible_gzinflate(string $gzData)
     {
         // Compressed data might contain a full zlib header, if so strip it for
         // gzinflate()
@@ -261,5 +263,4 @@ class RequestHelper
 
         return false;
     }
-
 }

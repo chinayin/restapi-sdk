@@ -41,9 +41,9 @@ class UhzUploader extends SimpleUploader
     /**
      * Upload file to uhouzz.
      *
-     * @param string $content  File content
-     * @param string $mimeType MIME type of file
-     * @param string $key      Generated file name
+     * @param $content  File content
+     * @param $mimeType MIME type of file
+     * @param $key      Generated file name
      *
      * @return mixed
      */

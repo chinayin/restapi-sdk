@@ -8,7 +8,8 @@ namespace RestAPI;
  * A BatchRequestError object consists of zero or more request and
  * response errors.
  */
-class BatchRequestError extends CloudException {
+class BatchRequestError extends CloudException
+{
     /**
      * Array of error response.
      *
@@ -16,12 +17,14 @@ class BatchRequestError extends CloudException {
      */
     private $errors = [];
 
-    public function __construct($message = '', $code = 1) {
+    public function __construct($message = '', $code = 1)
+    {
         $message = empty($message) ? 'Batch request error.' : $message;
         parent::__construct($message, $code);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         $message = $this->message;
         if (!$this->isEmpty()) {
             $message .= json_encode($this->errors);
@@ -42,7 +45,8 @@ class BatchRequestError extends CloudException {
      *
      * @return BatchRequestError
      */
-    public function add($request, $response) {
+    public function add($request, $response): BatchRequestError
+    {
         $error['error_code'] = (isset($response['error_code']) && !empty($response['error_code']))
             ? $response['error_code'] : -1;
         $error['message'] = "{$error['error_code']} {$response['message']}:"
@@ -57,7 +61,8 @@ class BatchRequestError extends CloudException {
      *
      * @return array
      */
-    public function getAll() {
+    public function getAll(): array
+    {
         return $this->errors;
     }
 
@@ -70,8 +75,9 @@ class BatchRequestError extends CloudException {
      *
      * @return null|array
      */
-    public function getFirst() {
-        return isset($this->errors[0]) ? $this->errors[0] : null;
+    public function getFirst(): ?array
+    {
+        return $this->errors[0] ?? null;
     }
 
     /**
@@ -79,7 +85,8 @@ class BatchRequestError extends CloudException {
      *
      * @return bool
      */
-    public function isEmpty() {
+    public function isEmpty(): bool
+    {
         return 0 == count($this->errors);
     }
 }

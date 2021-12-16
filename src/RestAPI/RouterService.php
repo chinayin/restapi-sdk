@@ -4,11 +4,11 @@ namespace RestAPI;
 
 class RouterService
 {
-    const TTL_KEY = 'ttl';
-    const API_SERVER_KEY = 'api_server';
-    const IV_KEY = 'iv';
-    const IS_PRIVATE_ZONE_KEY = 'is_private_zone';
-    const CONST_IS_PRIVATE_ZONE_SERVER = 'DEPLOY_IS_VPC_ZONE';
+    public const TTL_KEY = 'ttl';
+    public const API_SERVER_KEY = 'api_server';
+    public const IV_KEY = 'iv';
+    public const IS_PRIVATE_ZONE_KEY = 'is_private_zone';
+    public const CONST_IS_PRIVATE_ZONE_SERVER = 'DEPLOY_IS_VPC_ZONE';
     private static $INSTANCES;
     private $sysId;
     private $region;
@@ -56,7 +56,7 @@ class RouterService
      *
      * @return RouterService
      */
-    public static function getInstance($sysId)
+    public static function getInstance($sysId): RouterService
     {
         if (isset(self::$INSTANCES[$sysId])) {
             return self::$INSTANCES[$sysId];
@@ -94,7 +94,7 @@ class RouterService
         $this->validate_server_key($server_key);
         $routes = $this->getDefaultRoutes();
 
-        return isset($routes[$server_key]) ? $routes[$server_key] : null;
+        return $routes[$server_key] ?? null;
     }
 
     private function validate_server_key($server_key)

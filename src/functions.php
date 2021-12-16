@@ -8,7 +8,7 @@
  * @return array
  * @throws \RestAPI\RestAPIException
  */
-function RestServicePost($path, $params, $headers = [])
+function RestServicePost($path, $params, array $headers = []): array
 {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
@@ -35,7 +35,7 @@ function RestServicePost($path, $params, $headers = [])
  * @return array
  * @throws \RestAPI\RestAPIException
  */
-function RestServiceGet($path, $params = null, $headers = [])
+function RestServiceGet($path, $params = null, array $headers = []): array
 {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
@@ -59,7 +59,7 @@ function RestServiceGet($path, $params = null, $headers = [])
  *
  * @return string
  */
-function RestServiceBuildRequestUrl($path)
+function RestServiceBuildRequestUrl($path): string
 {
     \RestAPI\RestServiceClient::initialize(
         \RestAPI\Helper::getEnv('restapi.sys_id'),
@@ -115,5 +115,3 @@ function SsoClientDelete($accessToken, $path, $params, $headers = [])
     SsoClientInitialize($accessToken, $headers);
     return \RestAPI\Client::delete($path, $params, $headers);
 }
-
-

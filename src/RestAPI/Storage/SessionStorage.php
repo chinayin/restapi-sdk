@@ -14,7 +14,6 @@ namespace RestAPI\Storage;
  */
 class SessionStorage implements IStorage
 {
-
     /**
      * Storage Key
      * Value will be stored under this key in $_SESSION.
@@ -41,7 +40,7 @@ class SessionStorage implements IStorage
      *
      * @return IStorage|void
      */
-    public function set($key, $val)
+    public function set(string $key, $val)
     {
         $_SESSION[static::$storageKey][$key] = $val;
     }
@@ -53,7 +52,7 @@ class SessionStorage implements IStorage
      *
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         if (isset($_SESSION[static::$storageKey][$key])) {
             return $_SESSION[static::$storageKey][$key];
@@ -68,7 +67,7 @@ class SessionStorage implements IStorage
      *
      * @return IStorage|void
      */
-    public function remove($key)
+    public function remove(string $key)
     {
         unset($_SESSION[static::$storageKey][$key]);
     }
@@ -83,4 +82,3 @@ class SessionStorage implements IStorage
         $_SESSION[static::$storageKey] = [];
     }
 }
-

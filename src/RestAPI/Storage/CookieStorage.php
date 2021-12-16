@@ -45,7 +45,7 @@ class CookieStorage implements IStorage
      * @param string $path    Cookie path scope
      * @param string $domain  Cookie domain scope
      */
-    public function __construct($seconds = 0, $path = "/", $domain = null)
+    public function __construct(int $seconds = 0, string $path = "/", string $domain = null)
     {
         if ($seconds <= 0) {
             // default to 7 days from now
@@ -65,7 +65,7 @@ class CookieStorage implements IStorage
      *
      * @return IStorage|void
      */
-    public function set($key, $val, $seconds = null)
+    public function set(string $key, $val, int $seconds = null)
     {
         $expire = $seconds ? (time() + $seconds) : $this->expireIn;
         setcookie($key, $val, $expire, $this->path, $this->domain);
@@ -78,7 +78,7 @@ class CookieStorage implements IStorage
      *
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         if (isset($_COOKIE[$key])) {
             return $_COOKIE[$key];
@@ -93,7 +93,7 @@ class CookieStorage implements IStorage
      *
      * @return IStorage|void
      */
-    public function remove($key)
+    public function remove(string $key)
     {
         setcookie($key, '', 1);
     }
@@ -108,4 +108,3 @@ class CookieStorage implements IStorage
         throw new \RuntimeException("Not implemented error.");
     }
 }
-

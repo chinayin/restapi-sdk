@@ -13,7 +13,7 @@ class Helper
      * @param null  $key
      * @param array $options
      */
-    public static function log($data, $key = null, $options = [])
+    public static function log($data, $key = null, array $options = [])
     {
         if (null == self::$logger) {
             self::$logger = function_exists('__LOG_MESSAGE');
@@ -31,7 +31,7 @@ class Helper
      *
      * @return mixed
      */
-    public static function getEnv($name, $default = null)
+    public static function getEnv(string $name, string $default = null)
     {
         $prefix = defined('ENV_PREFIX') ? ENV_PREFIX : '';
         $result = getenv($prefix . strtoupper(str_replace('.', '_', $name)));
@@ -48,5 +48,4 @@ class Helper
 
         return $default;
     }
-
 }

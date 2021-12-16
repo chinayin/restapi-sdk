@@ -4,7 +4,6 @@ namespace RestAPI;
 
 class HttpCode
 {
-
     public static $knownCodes = [
         //[Informational 1xx]
         '100' => "Continue",
