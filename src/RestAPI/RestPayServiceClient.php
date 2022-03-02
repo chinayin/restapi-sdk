@@ -5,7 +5,6 @@ namespace RestAPI;
 use RestAPI\RouterPayService as Router;
 use RestAPI\Storage\IStorage;
 use RestAPI\Storage\SessionStorage;
-use RestAPI\Uploader\SimpleUploader;
 
 /**
  * Client interfacing with REST API.
@@ -308,7 +307,6 @@ class RestPayServiceClient
         $h = self::$defaultHeaders;
 
         $h['X-Rest-Prod'] = self::$isProduction ? 1 : 0;
-//        $h['X-Rest-Signature'] = self::buildHeaderSignature();
         if (self::$accessToken) {
             $h['X-Rest-Authorization'] = self::$accessToken;
         }
@@ -649,72 +647,6 @@ class RestPayServiceClient
     }
 
     /**
-     * Issue UPLOAD request to RestAPI.
-     *
-     * @param       $path
-     *                            Request path (without version string)
-     * @param array $headers
-     *                            Optional headers
-     * @param null $useMasterKey
-     *                            Use master key or not, optional
-     * @param mixed $filepath
-     * @param mixed $params
-     *
-     * @return array
-     * @throws RestAPIException
-     * @see self::request()
-     */
-    public static function upload(
-        $path,
-        $filepath,
-        $params = [],
-        array $headers = [],
-        $useMasterKey = null
-    ): array {
-        self::assertInitialized();
-        $url = self::getAPIEndPoint();
-        // 强制/开头的path
-        if (!str_starts_with($path, '/')) {
-            throw new \RuntimeException(
-                "${path} is not start with /",
-                -1
-            );
-        }
-        $url .= '/' . ltrim($path, '/');
-
-        $defaultHeaders = self::buildHeaders($useMasterKey);
-        if (empty($headers)) {
-            $headers = $defaultHeaders;
-        } else {
-            $headers = array_merge($defaultHeaders, $headers);
-        }
-        $data = [];
-
-        try {
-            $uploader = SimpleUploader::createUploader('uhz');
-            $uploader->initialize($url, self::randomString(10));
-            // 判断是否存在
-            if (defined('CLIENT_APP_ID')) {
-                $params['app_id'] = CLIENT_APP_ID;
-            }
-            // 设置参数
-            $uploader->setUploadParams($params);
-            $data = $uploader->uploadWithLocalFile($filepath, 'file');
-        } catch (\Exception $ex) {
-            throw new RestAPIException($ex->getMessage(), -1);
-        }
-
-        if (isset($data['error_code']) && !empty($data['error_code'])) {
-            $code = $data['error_code'] ?? -1;
-            $e = new RestAPIException("{$data['message']}", $code);
-            $e->setErrorData($data);
-            throw $e;
-        }
-
-        return $data;
-    }
-
-    /**
      * Format date according to spec.
      *
      * @param \DateTime $date
@@ -778,37 +710,6 @@ class RestPayServiceClient
     public static function randomString($length = 10): string
     {
         return substr(str_shuffle('QWERTYUIOPASDFGHJKLZXCVBNM1234567890qwertyuiopasdfghjklzxcvbnm'), 1, $length);
-    }
-
-    /**
-     * Generate a header Signature.
-     *
-     * @return string
-     */
-    private static function buildHeaderSignature(): string
-    {
-        $data = [
-            'sys_id' => self::$sysId,
-            'version' => self::$apiVersion,
-            'client_ip' => self::$clientIp,
-            '_time' => time(),
-            '_salt' => self::randomString(10),
-        ];
-        // 2019-04-10 client未配置处理 判断是否thinkphp5从里面取
-        if (empty($data['client_ip']) && class_exists('\think\Request')) {
-            $data['client_ip'] = \think\Request::instance()->ip();
-        }
-        $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
-
-        return base64_encode(
-            openssl_encrypt(
-                http_build_query($data),
-                'AES-256-CBC',
-                self::$secretKey,
-                OPENSSL_RAW_DATA,
-                $iv
-            )
-        );
     }
 
     /**

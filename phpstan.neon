@@ -10,7 +10,7 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     paths:
         - src
-    excludes_analyse:
+    excludePaths:
         - src/AdapterTest/
     ignoreErrors:
         - '#Function __LOG_MESSAGE.* not found\.#'

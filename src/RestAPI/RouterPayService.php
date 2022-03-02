@@ -48,7 +48,7 @@ class RouterPayService
      *
      * @param $sysId
      *
-     * @return RouterService
+     * @return RouterPayService
      */
     public static function getInstance($sysId): RouterPayService
     {
