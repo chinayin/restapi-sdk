@@ -10,7 +10,7 @@ class Helper
      * 日志记录函数.
      *
      * @param       $data
-     * @param null  $key
+     * @param null $key
      * @param array $options
      */
     public static function log($data, $key = null, array $options = [])
@@ -26,8 +26,8 @@ class Helper
      *
      * @access public
      *
-     * @param  string $name    环境变量名（支持二级 . 号分割）
-     * @param  string $default 默认值
+     * @param string $name 环境变量名（支持二级 . 号分割）
+     * @param string $default 默认值
      *
      * @return mixed
      */

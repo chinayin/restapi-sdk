@@ -2,8 +2,10 @@
 
 namespace RestAPI;
 
+use RestAPI\RouterPayService as Router;
 use RestAPI\Storage\IStorage;
 use RestAPI\Storage\SessionStorage;
+use RestAPI\Uploader\SimpleUploader;
 
 /**
  * Client interfacing with REST API.
@@ -11,7 +13,7 @@ use RestAPI\Storage\SessionStorage;
  * the response into objects in PHP. There are also utility functions
  * such as `::randomFloat` to generate a random float number.
  */
-class Client
+class RestPayServiceClient
 {
     /**
      * Client version.
@@ -117,18 +119,24 @@ class Client
      */
     private static $logger;
 
+    /** @var int */
+    private static $appId;
+    /** @var int */
+    private static $aprId;
+    /** @var string */
+    private static $appSecret;
+
     /**
      * Initialize application key and settings.
      *
      * @param string $sysId Application ID
      * @param string $secretKey Application key
-     * @param string $accessToken Application accesstoken
+     * @param ?string $region Application region
      */
-    public static function initialize(string $sysId, string $secretKey, string $accessToken)
+    public static function initialize(string $sysId, string $secretKey, string $region = null)
     {
         self::$sysId = $sysId;
         self::$secretKey = $secretKey;
-        self::$accessToken = $accessToken;
 
         self::$defaultHeaders = [
             'Content-Type' => 'application/json;charset=utf-8',
@@ -136,6 +144,9 @@ class Client
             'User-Agent' => self::getVersionString(),
             'X-Rest-Sysid' => self::$sysId,
             'X-Rest-Client' => self::VERSION,
+            // 2022-01-12 客户端加密 新增
+            'X-Client-Appid' => self::$appId,
+            'X-Client-Aprid' => self::$aprId,
         ];
 
         // Use session storage by default
@@ -144,6 +155,9 @@ class Client
         }
 
         self::useProduction('production' == getenv('RESTAPI_ENV'));
+        if ($region) {
+            self::useRegion($region);
+        }
         // logger
         self::$logger = function_exists('__LOG_MESSAGE');
     }
@@ -294,12 +308,11 @@ class Client
         $h = self::$defaultHeaders;
 
         $h['X-Rest-Prod'] = self::$isProduction ? 1 : 0;
-
-        $h['X-Rest-Signature'] = self::buildHeaderSignature();
-
+//        $h['X-Rest-Signature'] = self::buildHeaderSignature();
         if (self::$accessToken) {
             $h['X-Rest-Authorization'] = self::$accessToken;
         }
+        $h['X-Client-Signature'] = self::buildHeaderAppSignature();
 
         return $h;
     }
@@ -324,7 +337,7 @@ class Client
      *                            Use master key or not
      *
      * @return mixed
-     * @throws CloudException
+     * @throws RestAPIException
      */
     public static function request(
         $method,
@@ -440,12 +453,12 @@ class Client
         if (empty($respCode) || $respCode !== 200) {
             $respCodeText = HttpCode::getText($respCode);
             self::log($unionId, 'exception', "{$request_id},$respCode {$respCodeText} (${url})");
-            throw new CloudException("{$request_id},$respCode {$respCodeText}", -1);
+            throw new RestAPIException("{$request_id},$respCode {$respCodeText}", -1);
         }
         // 正常请求,单格式不对
         if (str_contains($respType, 'text/html')) {
             self::log($unionId, 'exception', "{$request_id},Bad request (${url})");
-            throw new CloudException("{$request_id},Bad request", -1);
+            throw new RestAPIException("{$request_id},Bad request", -1);
         }
         $data = json_decode($resp, true);
         empty($request_id) && $request_id = (empty($data) ? '-' : RequestHelper::parse_request_id($data));
@@ -457,7 +470,7 @@ class Client
 
         if (isset($data['error_code']) && !empty($data['error_code'])) {
             $code = $data['error_code'] ?? -1;
-            $e = new CloudException("{$data['message']}", $code);
+            $e = new RestAPIException("{$data['message']}", $code);
             $e->setErrorData($data);
             throw $e;
         }
@@ -487,7 +500,7 @@ class Client
      *                            Use master key or not, optional
      *
      * @return array
-     * @throws CloudException
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function get(
@@ -518,7 +531,7 @@ class Client
      *                            Use master key or not, optional
      *
      * @return array
-     * @throws CloudException
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function post(
@@ -549,7 +562,7 @@ class Client
      *                            Use master key or not, optional
      *
      * @return array
-     * @throws CloudException
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function put(
@@ -578,7 +591,7 @@ class Client
      *                            Use master key or not, optional
      *
      * @return array
-     * @throws CloudException
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function delete(
@@ -606,7 +619,7 @@ class Client
      *                            Use master key or not, optional
      *
      * @return array
-     * @throws CloudException
+     * @throws RestAPIException
      * @see self::request()
      */
     public static function batch(
@@ -633,6 +646,72 @@ class Client
         }
 
         return $response;
+    }
+
+    /**
+     * Issue UPLOAD request to RestAPI.
+     *
+     * @param       $path
+     *                            Request path (without version string)
+     * @param array $headers
+     *                            Optional headers
+     * @param null $useMasterKey
+     *                            Use master key or not, optional
+     * @param mixed $filepath
+     * @param mixed $params
+     *
+     * @return array
+     * @throws RestAPIException
+     * @see self::request()
+     */
+    public static function upload(
+        $path,
+        $filepath,
+        $params = [],
+        array $headers = [],
+        $useMasterKey = null
+    ): array {
+        self::assertInitialized();
+        $url = self::getAPIEndPoint();
+        // 强制/开头的path
+        if (!str_starts_with($path, '/')) {
+            throw new \RuntimeException(
+                "${path} is not start with /",
+                -1
+            );
+        }
+        $url .= '/' . ltrim($path, '/');
+
+        $defaultHeaders = self::buildHeaders($useMasterKey);
+        if (empty($headers)) {
+            $headers = $defaultHeaders;
+        } else {
+            $headers = array_merge($defaultHeaders, $headers);
+        }
+        $data = [];
+
+        try {
+            $uploader = SimpleUploader::createUploader('uhz');
+            $uploader->initialize($url, self::randomString(10));
+            // 判断是否存在
+            if (defined('CLIENT_APP_ID')) {
+                $params['app_id'] = CLIENT_APP_ID;
+            }
+            // 设置参数
+            $uploader->setUploadParams($params);
+            $data = $uploader->uploadWithLocalFile($filepath, 'file');
+        } catch (\Exception $ex) {
+            throw new RestAPIException($ex->getMessage(), -1);
+        }
+
+        if (isset($data['error_code']) && !empty($data['error_code'])) {
+            $code = $data['error_code'] ?? -1;
+            $e = new RestAPIException("{$data['message']}", $code);
+            $e->setErrorData($data);
+            throw $e;
+        }
+
+        return $data;
     }
 
     /**
@@ -733,17 +812,48 @@ class Client
     }
 
     /**
+     * Generate a app header Signature.
+     *
+     * @return string
+     */
+    private static function buildHeaderAppSignature(): string
+    {
+        $data = [
+            'app_id' => self::$appId,
+            'app_version' => defined('CLIENT_APP_VERSION') ? CLIENT_APP_VERSION : '',
+            'api_version' => defined('CLIENT_API_VERSION') ? CLIENT_API_VERSION : '',
+            '_time' => time(),
+            '_salt' => self::randomString(10),
+        ];
+        $iv = Router::getInstance(self::$sysId)->getRoute(Router::IV_KEY);
+
+        return base64_encode(
+            openssl_encrypt(
+                http_build_query($data),
+                'AES-128-CBC',
+                self::$appSecret,
+                OPENSSL_RAW_DATA,
+                $iv
+            )
+        );
+    }
+
+    /**
      * Assert client is correctly initialized.
      */
     private static function assertInitialized()
     {
         if (empty(self::$sysId) &&
             empty(self::$secretKey) &&
-            empty(self::$sysMasterKey)) {
+            empty(self::$sysMasterKey) &&
+            empty(self::$appId) &&
+            empty(self::$aprId) &&
+            empty(self::$appSecret)
+        ) {
             throw new \RuntimeException(
-                'Client is not initialized, ' .
+                'RestPayServiceClient is not initialized, ' .
                 'please specify application key ' .
-                'with Client::initialize.'
+                'with RestPayServiceClient::initialize.'
             );
         }
     }
@@ -760,6 +870,22 @@ class Client
         if (!self::$logger) {
             return;
         }
-        __LOG_MESSAGE($data, "RestSsoClient($unionid)::$key");
+        __LOG_MESSAGE($data, "RestPayServiceClient($unionid)::$key");
     }
+
+    public static function setAppId($appId)
+    {
+        self::$appId = $appId;
+    }
+
+    public static function setAprId($aprId)
+    {
+        self::$aprId = $aprId;
+    }
+
+    public static function setAppSecret($appSecret)
+    {
+        self::$appSecret = $appSecret;
+    }
+
 }

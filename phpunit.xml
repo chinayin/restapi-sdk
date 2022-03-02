@@ -24,7 +24,9 @@
         <env name="RESTAPI_ENV" value="testing"/>
         <env name="RESTAPI_SYS_ID" value="12"/>
         <env name="RESTAPI_SYS_KEY" value="TfCfzxrXG34HTTBO"/>
+        <env name="RESTAPI_SECRET_KEY" value="dsfdsf"/>
+        <env name="RESTAPI_REGION" value="testing"/>
         <env name="RESTAPI_SYS_MASTER_KEY" value=""/>
-        <env name="RESTAPI_API_SERVER" value="testssoapi.uhomes.com"/>
+        <env name="RESTAPI_API_SERVER" value=""/>
     </php>
 </phpunit>

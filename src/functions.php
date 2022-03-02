@@ -1,59 +1,56 @@
 <?php
 
+use RestAPI\Client;
+use RestAPI\CloudException;
+use RestAPI\Helper;
+use RestAPI\RestAPIException;
+use RestAPI\RestPayServiceClient;
+use RestAPI\RestServiceClient;
+
 /**
- * @param       $path
- * @param       $params
- * @param array $headers
- *
- * @return array
- * @throws \RestAPI\RestAPIException
+ * @throws RestAPIException
  */
 function RestServicePost($path, $params, array $headers = []): array
 {
-    \RestAPI\RestServiceClient::initialize(
-        \RestAPI\Helper::getEnv('restapi.sys_id'),
-        \RestAPI\Helper::getEnv('restapi.secret_key'),
-        \RestAPI\Helper::getEnv('restapi.region')
+    RestServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
     );
     // timeout
     if (isset($headers['timeout']) && !empty($headers['timeout'])) {
-        \RestAPI\RestServiceClient::setTimeout($headers['timeout']);
+        RestServiceClient::setTimeout($headers['timeout']);
         unset($headers['timeout']);
     }
     // server_url
-    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    $serverUrl = Helper::getEnv('restapi.server_url');
     if (!empty($serverUrl)) {
-        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+        RestServiceClient::setServerUrl($serverUrl);
     }
-    return \RestAPI\RestServiceClient::post($path, $params, $headers);
+    return RestServiceClient::post($path, $params, $headers);
 }
 
 /**
- * @param       $path
- * @param       $params
- * @param array $headers
- *
- * @return array
- * @throws \RestAPI\RestAPIException
+ * @throws RestAPIException
  */
 function RestServiceGet($path, $params = null, array $headers = []): array
 {
-    \RestAPI\RestServiceClient::initialize(
-        \RestAPI\Helper::getEnv('restapi.sys_id'),
-        \RestAPI\Helper::getEnv('restapi.secret_key'),
-        \RestAPI\Helper::getEnv('restapi.region')
+    RestServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
     );
     // timeout
     if (isset($headers['timeout']) && !empty($headers['timeout'])) {
-        \RestAPI\RestServiceClient::setTimeout($headers['timeout']);
+        RestServiceClient::setTimeout($headers['timeout']);
         unset($headers['timeout']);
     }
     // server_url
-    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    $serverUrl = Helper::getEnv('restapi.server_url');
     if (!empty($serverUrl)) {
-        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+        RestServiceClient::setServerUrl($serverUrl);
     }
-    return \RestAPI\RestServiceClient::get($path, $params, $headers);
+    return RestServiceClient::get($path, $params, $headers);
 }
 
 /**
@@ -63,59 +60,119 @@ function RestServiceGet($path, $params = null, array $headers = []): array
  */
 function RestServiceBuildRequestUrl($path): string
 {
-    \RestAPI\RestServiceClient::initialize(
-        \RestAPI\Helper::getEnv('restapi.sys_id'),
-        \RestAPI\Helper::getEnv('restapi.secret_key'),
-        \RestAPI\Helper::getEnv('restapi.region')
+    RestServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
     );
     // server_url
-    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    $serverUrl = Helper::getEnv('restapi.server_url');
     if (!empty($serverUrl)) {
-        \RestAPI\RestServiceClient::setServerUrl($serverUrl);
+        RestServiceClient::setServerUrl($serverUrl);
     }
-    return \RestAPI\RestServiceClient::buildRequestUrl($path);
+    return RestServiceClient::buildRequestUrl($path);
 }
 
+// ssoapi
 function SsoClientInitialize($accessToken, $headers = [])
 {
-    \RestAPI\Client::initialize(
-        \RestAPI\Helper::getEnv('restapi.sys_id'),
-        \RestAPI\Helper::getEnv('restapi.secret_key'),
+    Client::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
         $accessToken
     );
-    \RestAPI\Client::useRegion(\RestAPI\Helper::getEnv('restapi.region'));
+    Client::useRegion(Helper::getEnv('restapi.region'));
     // timeout
     if (isset($headers['timeout']) && !empty($headers['timeout'])) {
-        \RestAPI\Client::setTimeout($headers['timeout']);
+        Client::setTimeout($headers['timeout']);
         unset($headers['timeout']);
     }
     // server_url
-    $serverUrl = \RestAPI\Helper::getEnv('restapi.server_url');
+    $serverUrl = Helper::getEnv('restapi.server_url');
     if (!empty($serverUrl)) {
-        \RestAPI\Client::setServerUrl($serverUrl);
+        Client::setServerUrl($serverUrl);
     }
 }
 
-function SsoClientGet($accessToken, $path, $params, $headers = [])
+/**
+ * @throws CloudException
+ */
+function SsoClientGet($accessToken, $path, $params, $headers = []): array
 {
     SsoClientInitialize($accessToken, $headers);
-    return \RestAPI\Client::get($path, $params, $headers);
+    return Client::get($path, $params, $headers);
 }
 
-function SsoClientPost($accessToken, $path, $params, $headers = [])
+/**
+ * @throws CloudException
+ */
+function SsoClientPost($accessToken, $path, $params, $headers = []): array
 {
     SsoClientInitialize($accessToken, $headers);
-    return \RestAPI\Client::post($path, $params, $headers);
+    return Client::post($path, $params, $headers);
 }
 
-function SsoClientPut($accessToken, $path, $params, $headers = [])
+/**
+ * @throws CloudException
+ */
+function SsoClientPut($accessToken, $path, $params, $headers = []): array
 {
     SsoClientInitialize($accessToken, $headers);
-    return \RestAPI\Client::put($path, $params, $headers);
+    return Client::put($path, $params, $headers);
 }
 
-function SsoClientDelete($accessToken, $path, $params, $headers = [])
+/**
+ * @throws CloudException
+ */
+function SsoClientDelete($accessToken, $path, $params, $headers = []): array
 {
     SsoClientInitialize($accessToken, $headers);
-    return \RestAPI\Client::delete($path, $params, $headers);
+    return Client::delete($path, $params, $headers);
+}
+
+// payapi
+function PayClientInitialize($headers = [])
+{
+    RestPayServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
+    );
+    // appid aprid
+    if (isset($headers['app_id']) && !empty($headers['app_id'])) {
+        RestPayServiceClient::setAppId($headers['app_id']);
+        unset($headers['app_id']);
+    }
+    if (isset($headers['apr_id']) && !empty($headers['apr_id'])) {
+        RestPayServiceClient::setAprId($headers['apr_id']);
+        unset($headers['apr_id']);
+    }
+    // timeout
+    if (isset($headers['timeout']) && !empty($headers['timeout'])) {
+        RestPayServiceClient::setTimeout($headers['timeout']);
+        unset($headers['timeout']);
+    }
+    // server_url
+    $serverUrl = Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        RestPayServiceClient::setServerUrl($serverUrl);
+    }
+}
+
+/**
+ * @throws RestAPIException
+ */
+function PayClientGet($path, $params = null, array $headers = []): array
+{
+    PayClientInitialize($headers);
+    return RestPayServiceClient::get($path, $params, $headers);
+}
+
+/**
+ * @throws RestAPIException
+ */
+function PayClientPost($path, $params = null, array $headers = []): array
+{
+    PayClientInitialize($headers);
+    return RestPayServiceClient::post($path, $params, $headers);
 }

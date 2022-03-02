@@ -25,5 +25,8 @@ perl -pi -e "s/const VERSION = .*\;/const VERSION = \'$version\'\;/" \
 perl -pi -e "s/const VERSION = .*\;/const VERSION = \'$version\'\;/" \
     src/RestAPI/RestServiceClient.php
 
+perl -pi -e "s/const VERSION = .*\;/const VERSION = \'$version\'\;/" \
+    src/RestAPI/RestPayServiceClient.php
+
 echo "Done! Ready to commit and release $version!"
 
