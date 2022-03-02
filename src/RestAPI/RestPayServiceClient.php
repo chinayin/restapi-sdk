@@ -887,5 +887,4 @@ class RestPayServiceClient
     {
         self::$appSecret = $appSecret;
     }
-
 }
