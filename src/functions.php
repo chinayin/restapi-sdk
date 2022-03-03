@@ -133,11 +133,6 @@ function SsoClientDelete($accessToken, $path, $params, $headers = []): array
 // payapi
 function PayClientInitialize($headers = [])
 {
-    RestPayServiceClient::initialize(
-        Helper::getEnv('restapi.sys_id'),
-        Helper::getEnv('restapi.secret_key'),
-        Helper::getEnv('restapi.region')
-    );
     // appid aprid
     if (isset($headers['app_id']) && !empty($headers['app_id'])) {
         RestPayServiceClient::setAppId($headers['app_id']);
@@ -147,6 +142,11 @@ function PayClientInitialize($headers = [])
         RestPayServiceClient::setAprId($headers['apr_id']);
         unset($headers['apr_id']);
     }
+    RestPayServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
+    );
     // timeout
     if (isset($headers['timeout']) && !empty($headers['timeout'])) {
         RestPayServiceClient::setTimeout($headers['timeout']);
