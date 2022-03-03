@@ -16,7 +16,7 @@ class Client
     /**
      * Client version.
      */
-    public const VERSION = '0.7.2';
+    public const VERSION = '0.7.3';
 
     /**
      * Is in production or not.

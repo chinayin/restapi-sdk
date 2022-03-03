@@ -142,6 +142,10 @@ function PayClientInitialize($headers = [])
         RestPayServiceClient::setAprId($headers['apr_id']);
         unset($headers['apr_id']);
     }
+    if (isset($headers['app_secret']) && !empty($headers['app_secret'])) {
+        RestPayServiceClient::setAppSecret($headers['app_secret']);
+        unset($headers['app_secret']);
+    }
     RestPayServiceClient::initialize(
         Helper::getEnv('restapi.sys_id'),
         Helper::getEnv('restapi.secret_key'),
