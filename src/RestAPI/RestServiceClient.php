@@ -18,7 +18,7 @@ class RestServiceClient
     /**
      * Client version.
      */
-    public const VERSION = '0.7.4';
+    public const VERSION = '1.0.0';
 
     /**
      * Is in production or not.
@@ -32,7 +32,7 @@ class RestServiceClient
      *
      * @var string
      */
-    private static $apiVersion = '2.0';
+    private static $apiVersion = '3.0';
 
     /**
      * API Timeout.

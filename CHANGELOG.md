@@ -1,139 +1,144 @@
+1.0.0 发布日期：2022-03-08
+----
+
+- RestService3.0接口支持
+
 0.7.4 发布日期：2022-03-04
 ----
 
-* 调整guzzlehttp/guzzle依赖版本
+- 调整guzzlehttp/guzzle依赖版本
 
 0.7.3 发布日期：2022-03-03
 ----
 
-* 修复bug
+- 修复bug
 
 0.7.0 发布日期：2022-03-02
 ----
 
-* 增加pay项目接口调用支持
+- 增加pay项目接口调用支持
 
 0.6.8 发布日期：2021-12-16
 ----
 
-* 更新域名配置
-* 调整php-cs-fixer,格式化代码
-* 更新composer.json依赖
+- 更新域名配置
+- 调整php-cs-fixer,格式化代码
+- 更新composer.json依赖
 
 0.6.7 发布日期：2021-04-13
 ----
 
-* 更新域名配置
+- 更新域名配置
 
 0.6.6 发布日期：2021-02-24
 ----
 
-* 兼容http2
+- 兼容http2
 
 0.6.5 发布日期：2021-02-19
 ----
 
-* 增加预发环境配置
+- 增加预发环境配置
 
 0.6.4 发布日期：2021-01-14
 ----
 
-* fix HTTP/1.1 100 Continue
+- fix HTTP/1.1 100 Continue
 
 0.6.3 发布日期：2020-12-29
 ----
 
-* 增加当curl_exec返回false判断
+- 增加当curl_exec返回false判断
 
 0.6.2 发布日期：2020-12-28
 ----
 
-* 增加gzip支持
+- 增加gzip支持
 
 0.6.1 发布日期：2020-12-23
 ----
 
-* 增加RestServiceBuildRequestUrl方法
+- 增加RestServiceBuildRequestUrl方法
 
 0.6 发布日期：2020-12-23
 ----
 
-* 返回结果增加header
-* 增加对非200请求的处理日志显示
-* 错误返回结果人性化
+- 返回结果增加header
+- 增加对非200请求的处理日志显示
+- 错误返回结果人性化
 
 0.5.1 发布日期：2020-11-13
 ----
 
-* FILTER_SANITIZE_MAGIC_QUOTES在7.3版本中被弃用
+- FILTER_SANITIZE_MAGIC_QUOTES在7.3版本中被弃用
 
 0.5 发布日期：2020-09-29
 ----
 
-* 更改判断内网环境变量为DEPLOY_IS_VPC_ZONE
+- 更改判断内网环境变量为DEPLOY_IS_VPC_ZONE
 
 0.4 发布日期：2020-05-07
 ----
 
-* 增加travis,scrutinizer
-* 调整phpunit
+- 增加travis,scrutinizer
+- 调整phpunit
 
 0.3.3 发布日期：2020-01-15
 ----
 
-* ssoapi调用升级
-* 增加内网vpc环境判断IS_PRIVATE_ZONE_SERVER
+- ssoapi调用升级
+- 增加内网vpc环境判断IS_PRIVATE_ZONE_SERVER
 
 0.3.1 发布日期：2020-01-03
 ----
 
-* 增加日志和env配置获取
+- 增加日志和env配置获取
 
 0.3.0 发布日期：2020-01-02
 ----
 
-* 接口升级2.0版本，增加request日志
+- 接口升级2.0版本，增加request日志
 
 0.2.7 发布日期：2019-07-25
 ----
 
-* add setTimeout()
+- add setTimeout()
 
 0.2.6 发布日期：2019-04-11
 ----
 
-* fix date => data
+- fix date => data
 
 0.2.5 发布日期：2019-04-10
 ----
 
-* 增加未设置client_ip时从tp5中获取
+- 增加未设置client_ip时从tp5中获取
 
 0.2.4 发布日期：2019-01-02
 ----
 
-* 上传时接收自定义传参
+- 上传时接收自定义传参
 
 0.2.3 发布日期：2019-01-02
 ----
 
-* 增加区域设置预上线环境
+- 增加区域设置预上线环境
 
 0.2.2 发布日期：2018-12-17
 ----
 
-* ssoapi增加区域设置区分测试环境/正式环境
+- ssoapi增加区域设置区分测试环境/正式环境
 
 0.2.1 发布日期：2018-12-01
 ----
 
-* 增加RestServiceClient::upload支持文件上传
+- 增加RestServiceClient::upload支持文件上传
 
 0.2.0 发布日期：2018-11-23
 ----
 
-* 支持RestServiceClient调用内部服务
-* 增加dev testing 等线上环境的配置支持
+- 支持RestServiceClient调用内部服务
+- 增加dev testing 等线上环境的配置支持
 
 0.1.5 发布日期：2018-11-21
 ----

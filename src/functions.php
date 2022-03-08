@@ -7,10 +7,8 @@ use RestAPI\RestAPIException;
 use RestAPI\RestPayServiceClient;
 use RestAPI\RestServiceClient;
 
-/**
- * @throws RestAPIException
- */
-function RestServicePost($path, $params, array $headers = []): array
+// srvapi
+function RestServiceClientInitialize($headers = [])
 {
     RestServiceClient::initialize(
         Helper::getEnv('restapi.sys_id'),
@@ -27,6 +25,14 @@ function RestServicePost($path, $params, array $headers = []): array
     if (!empty($serverUrl)) {
         RestServiceClient::setServerUrl($serverUrl);
     }
+}
+
+/**
+ * @throws RestAPIException
+ */
+function RestServicePost($path, $params, array $headers = []): array
+{
+    RestServiceClientInitialize($headers);
     return RestServiceClient::post($path, $params, $headers);
 }
 
@@ -35,21 +41,7 @@ function RestServicePost($path, $params, array $headers = []): array
  */
 function RestServiceGet($path, $params = null, array $headers = []): array
 {
-    RestServiceClient::initialize(
-        Helper::getEnv('restapi.sys_id'),
-        Helper::getEnv('restapi.secret_key'),
-        Helper::getEnv('restapi.region')
-    );
-    // timeout
-    if (isset($headers['timeout']) && !empty($headers['timeout'])) {
-        RestServiceClient::setTimeout($headers['timeout']);
-        unset($headers['timeout']);
-    }
-    // server_url
-    $serverUrl = Helper::getEnv('restapi.server_url');
-    if (!empty($serverUrl)) {
-        RestServiceClient::setServerUrl($serverUrl);
-    }
+    RestServiceClientInitialize($headers);
     return RestServiceClient::get($path, $params, $headers);
 }
 
@@ -60,16 +52,7 @@ function RestServiceGet($path, $params = null, array $headers = []): array
  */
 function RestServiceBuildRequestUrl($path): string
 {
-    RestServiceClient::initialize(
-        Helper::getEnv('restapi.sys_id'),
-        Helper::getEnv('restapi.secret_key'),
-        Helper::getEnv('restapi.region')
-    );
-    // server_url
-    $serverUrl = Helper::getEnv('restapi.server_url');
-    if (!empty($serverUrl)) {
-        RestServiceClient::setServerUrl($serverUrl);
-    }
+    RestServiceClientInitialize([]);
     return RestServiceClient::buildRequestUrl($path);
 }
 
