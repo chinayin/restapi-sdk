@@ -107,10 +107,10 @@ function SsoClientPut($accessToken, $path, $params, $headers = []): array
 /**
  * @throws CloudException
  */
-function SsoClientDelete($accessToken, $path, $params, $headers = []): array
+function SsoClientDelete($accessToken, $path, $headers = []): array
 {
     SsoClientInitialize($accessToken, $headers);
-    return Client::delete($path, $params, $headers);
+    return Client::delete($path, $headers);
 }
 
 // payapi
