@@ -138,7 +138,8 @@ class RestPayServiceClient
         self::$secretKey = $secretKey;
 
         self::$defaultHeaders = [
-            'Content-Type' => 'application/json;charset=utf-8',
+            //'Content-Type' => 'application/json;charset=utf-8',
+            'Content-Type' => 'application/x-www-form-urlencoded;charset=utf-8',
             'Accept-Encoding' => 'gzip, deflate',
             'User-Agent' => self::getVersionString(),
             'X-Rest-Sysid' => self::$sysId,
@@ -367,6 +368,8 @@ class RestPayServiceClient
         $json = null;
         if (str_contains($headers['Content-Type'], '/json')) {
             $json = json_encode($data);
+        } elseif (str_contains($headers['Content-Type'], '/x-www-form-urlencoded')) {
+            $json = http_build_query($data);
         }
 
         // Build headers list in HTTP format
