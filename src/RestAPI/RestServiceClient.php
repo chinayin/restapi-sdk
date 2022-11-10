@@ -18,7 +18,7 @@ class RestServiceClient
     /**
      * Client version.
      */
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.0.5';
 
     /**
      * Is in production or not.
@@ -362,7 +362,7 @@ class RestServiceClient
         if (str_contains($headers['Content-Type'], '/json')) {
             $json = json_encode($data);
         } elseif (str_contains($headers['Content-Type'], '/x-www-form-urlencoded')) {
-            $json = http_build_query($data);
+            $json = empty($data) ? '' : http_build_query($data);
         }
 
         // Build headers list in HTTP format
