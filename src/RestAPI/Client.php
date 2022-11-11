@@ -16,7 +16,7 @@ class Client
     /**
      * Client version.
      */
-    public const VERSION = '1.0.6';
+    public const VERSION = '1.1';
 
     /**
      * Is in production or not.
@@ -131,8 +131,7 @@ class Client
         self::$accessToken = $accessToken;
 
         self::$defaultHeaders = [
-            //'Content-Type' => 'application/json;charset=utf-8',
-            'Content-Type' => 'application/x-www-form-urlencoded;charset=utf-8',
+            'Content-Type' => 'application/json;charset=utf-8',
             'Accept-Encoding' => 'gzip, deflate',
             'User-Agent' => self::getVersionString(),
             'X-Rest-Sysid' => self::$sysId,
@@ -355,9 +354,7 @@ class Client
             $headers = array_merge($defaultHeaders, $headers);
         }
         $json = null;
-        if (str_contains($headers['Content-Type'], '/json')
-            || str_contains($headers['Content-Type'], '/x-www-form-urlencoded')
-        ) {
+        if (str_contains($headers['Content-Type'], '/json')) {
             $json = json_encode($data);
         }
 
