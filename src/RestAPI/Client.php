@@ -355,10 +355,10 @@ class Client
             $headers = array_merge($defaultHeaders, $headers);
         }
         $json = null;
-        if (str_contains($headers['Content-Type'], '/json')) {
+        if (str_contains($headers['Content-Type'], '/json')
+            || str_contains($headers['Content-Type'], '/x-www-form-urlencoded')
+        ) {
             $json = json_encode($data);
-        } elseif (str_contains($headers['Content-Type'], '/x-www-form-urlencoded')) {
-            $json = empty($data) ? '' : http_build_query($data);
         }
 
         // Build headers list in HTTP format
