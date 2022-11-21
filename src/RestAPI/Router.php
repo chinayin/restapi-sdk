@@ -20,13 +20,16 @@ class Router
         Region::CN => 'ssoapi.uhomes.com',
         Region::HK => 'ssoapi-hk.uhomes.com',
         Region::US => 'ssoapi-us.uhomes.com',
-        Region::GB => 'ssoapi-gb.uhomes.com',
+        Region::UK => 'ssoapi-uk.uhomes.com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
         Region::CN => 'ssoapi.uhomes.local',
         Region::TESTING => 'ssoapi.uhomes-test.local',
         Region::UAT => 'ssoapi.uhomes-uat.local',
+        // 内网专线回国内
+        Region::HK => 'ssoapi.uhomes-hk.local',
+        Region::UK => 'ssoapi.uhomes-uk.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -36,7 +39,7 @@ class Router
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
-        Region::GB => 'uhomescomtianlei',
+        Region::UK => 'uhomescomtianlei',
     ];
 
     private function __construct($sysId)

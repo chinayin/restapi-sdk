@@ -20,13 +20,16 @@ class RouterService
         Region::CN => 'srvapi.uhomes.com',
         Region::HK => 'srvapi-hk.uhomes.com',
         Region::US => 'srvapi-us.uhomes.com',
-        Region::GB => 'srvapi-gb.uhomes.com',
+        Region::UK => 'srvapi-uk.uhomes.com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
         Region::CN => 'srvapi.uhomes.local',
         Region::TESTING => 'srvapi.uhomes-test.local',
         Region::UAT => 'srvapi.uhomes-uat.local',
+        // 内网专线回国内
+        Region::HK => 'srvapi.uhomes-hk.local',
+        Region::UK => 'srvapi.uhomes-uk.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -36,7 +39,7 @@ class RouterService
         Region::CN => 'uhomescomtianlei',
         Region::HK => 'uhomescomtianlei',
         Region::US => 'uhomescomtianlei',
-        Region::GB => 'uhomescomtianlei',
+        Region::UK => 'uhomescomtianlei',
     ];
 
     private function __construct($sysId)
