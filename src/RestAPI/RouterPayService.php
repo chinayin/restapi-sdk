@@ -14,23 +14,23 @@ class RouterPayService
     private $region;
 
     private static $DEFAULT_REGION_ROUTE = [
-        Region::DEV => 'pay.uhomes.xyz',
-        Region::TESTING => 'testpay.uhomes.com',
-        Region::UAT => 'payuat.uhomes.com',
-        Region::CN => 'pay.uhomes.com',
+        Region::DEV => 'pay.[domain].xyz',
+        Region::TESTING => 'testpay.[domain].com',
+        Region::UAT => 'payuat.[domain].com',
+        Region::CN => 'pay.[domain].com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
-        Region::CN => 'payapi.uhomes.local',
-        Region::TESTING => 'payapi.uhomes-test.local',
-        Region::UAT => 'payapi.uhomes-uat.local',
+        Region::CN => 'payapi.[domain].local',
+        Region::TESTING => 'payapi.[domain]-test.local',
+        Region::UAT => 'payapi.[domain]-uat.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
-        Region::DEV => 'uhomescomleitian',
-        Region::TESTING => 'uhomescomleitian',
-        Region::UAT => 'uhomescomleitian',
-        Region::CN => 'uhomescomleitian',
+        Region::DEV => '[iv]',
+        Region::TESTING => '[iv]',
+        Region::UAT => '[iv]',
+        Region::CN => '[iv]',
     ];
 
     private function __construct($sysId)
@@ -112,6 +112,9 @@ class RouterPayService
         if ($isPrivateZoneServer && isset(self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region])) {
             $host = self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region];
         }
+        // 替换变量
+        $host = str_replace('[domain]', Domain::getMainDomain(), $host);
+        $iv= str_replace('[iv]', Domain::getIVHash(), $iv);
         return [
             self::API_SERVER_KEY => $host,
             self::IV_KEY => $iv,

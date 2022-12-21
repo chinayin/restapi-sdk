@@ -14,32 +14,32 @@ class Router
     private $region;
 
     private static $DEFAULT_REGION_ROUTE = [
-        Region::DEV => 'ssoapi.uhouzz.xyz',
-        Region::TESTING => 'ssoapi-test.uhomes.com',
-        Region::UAT => 'ssoapi-uat.uhomes.com',
-        Region::CN => 'ssoapi.uhomes.com',
-        Region::HK => 'ssoapi-hk.uhomes.com',
-        Region::US => 'ssoapi-us.uhomes.com',
-        Region::UK => 'ssoapi-uk.uhomes.com',
+        Region::DEV => 'ssoapi.[domain].xyz',
+        Region::TESTING => 'ssoapi-test.[domain].com',
+        Region::UAT => 'ssoapi-uat.[domain].com',
+        Region::CN => 'ssoapi.[domain].com',
+        Region::HK => 'ssoapi-hk.[domain].com',
+        Region::US => 'ssoapi-us.[domain].com',
+        Region::UK => 'ssoapi-uk.[domain].com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
-        Region::CN => 'ssoapi.uhomes.local',
-        Region::TESTING => 'ssoapi.uhomes-test.local',
-        Region::UAT => 'ssoapi.uhomes-uat.local',
+        Region::CN => 'ssoapi.[domain].local',
+        Region::TESTING => 'ssoapi.[domain]-test.local',
+        Region::UAT => 'ssoapi.[domain]-uat.local',
         // 内网专线回国内
-        Region::HK => 'ssoapi.uhomes-hk.local',
-        Region::UK => 'ssoapi.uhomes-uk.local',
+        Region::HK => 'ssoapi.[domain]-hk.local',
+        Region::UK => 'ssoapi.[domain]-uk.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
-        Region::DEV => 'uhomescomtianlei',
-        Region::TESTING => 'uhomescomtianlei',
-        Region::UAT => 'uhomescomtianlei',
-        Region::CN => 'uhomescomtianlei',
-        Region::HK => 'uhomescomtianlei',
-        Region::US => 'uhomescomtianlei',
-        Region::UK => 'uhomescomtianlei',
+        Region::DEV => '[iv]',
+        Region::TESTING => '[iv]',
+        Region::UAT => '[iv]',
+        Region::CN => '[iv]',
+        Region::HK => '[iv]',
+        Region::US => '[iv]',
+        Region::UK => '[iv]',
     ];
 
     private function __construct($sysId)
@@ -121,6 +121,9 @@ class Router
         if ($isPrivateZoneServer && isset(self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region])) {
             $host = self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region];
         }
+        // 替换变量
+        $host = str_replace('[domain]', Domain::getMainDomain(), $host);
+        $iv= str_replace('[iv]', Domain::getIVHash(), $iv);
         return [
             self::API_SERVER_KEY => $host,
             self::IV_KEY => $iv,
