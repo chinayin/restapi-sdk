@@ -350,7 +350,7 @@ class RestPayServiceClient
         // 强制/开头的path
         if (!str_starts_with($path, '/')) {
             throw new \RuntimeException(
-                "${path} is not start with /",
+                "{$path} is not start with /",
                 -1
             );
         }
@@ -372,7 +372,7 @@ class RestPayServiceClient
         // Build headers list in HTTP format
         $headersList = array_map(
             function ($key, $val) {
-                return "${key}: ${val}";
+                return "{$key}: {$val}";
             },
             array_keys($headers),
             $headers
@@ -422,9 +422,9 @@ class RestPayServiceClient
         curl_close($req);
         // 2020-12-29 当curl_exec返回false
         if (false === $response) {
-            self::log($unionId, 'exception', "-,CURL connection (${url}) curl_exec error: ${errno} ${error}");
+            self::log($unionId, 'exception', "-,CURL connection ({$url}) curl_exec error: {$errno} {$error}");
             throw new \RuntimeException(
-                "-,CURL connection (${url}) curl_exec error: ${errno} ${error}",
+                "-,CURL connection ({$url}) curl_exec error: {$errno} {$error}",
                 $errno
             );
         }
@@ -441,21 +441,21 @@ class RestPayServiceClient
           *  - rest api error
           */
         if ($errno > 0) {
-            self::log($unionId, 'exception', "{$request_id},CURL connection (${url}) error: ${errno} ${error}");
+            self::log($unionId, 'exception', "{$request_id},CURL connection ({$url}) error: {$errno} {$error}");
             throw new \RuntimeException(
-                "{$request_id},CURL connection (${url}) error: ${errno} ${error}",
+                "{$request_id},CURL connection ({$url}) error: {$errno} {$error}",
                 $errno
             );
         }
         // 非正常请求
         if (empty($respCode) || $respCode !== 200) {
             $respCodeText = HttpCode::getText($respCode);
-            self::log($unionId, 'exception', "{$request_id},$respCode {$respCodeText} (${url})");
+            self::log($unionId, 'exception', "{$request_id},$respCode {$respCodeText} ({$url})");
             throw new RestAPIException("{$request_id},$respCode {$respCodeText}", -1);
         }
         // 正常请求,单格式不对
         if (str_contains($respType, 'text/html')) {
-            self::log($unionId, 'exception', "{$request_id},Bad request (${url})");
+            self::log($unionId, 'exception', "{$request_id},Bad request ({$url})");
             throw new RestAPIException("{$request_id},Bad request", -1);
         }
         $data = json_decode($resp, true);

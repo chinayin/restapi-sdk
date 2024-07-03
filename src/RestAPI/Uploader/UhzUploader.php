@@ -29,7 +29,7 @@ class UhzUploader extends SimpleUploader
     {
         $content = file_get_contents($filepath);
         if (false === $content) {
-            throw new \RuntimeException("Read file error at ${filepath}");
+            throw new \RuntimeException("Read file error at {$filepath}");
         }
         $name = basename($filepath);
         $ext = pathinfo($name, PATHINFO_EXTENSION);
@@ -93,7 +93,7 @@ class UhzUploader extends SimpleUploader
          */
         if ($errno > 0) {
             throw new \RuntimeException(
-                "CURL (${url}) error: " .
+                "CURL ({$url}) error: " .
                 "{$errno} {$error}",
                 $errno
             );
