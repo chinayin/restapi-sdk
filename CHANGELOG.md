@@ -1,3 +1,8 @@
+v1.2.1 发布日期：2024-07-03
+----
+fix #{var} in strings is deprecated
+upgrade actions version
+
 1.2.0 发布日期：2023-10-26
 ----
 add RestPythonServiceClient
