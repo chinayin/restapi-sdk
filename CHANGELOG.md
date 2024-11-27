@@ -1,3 +1,7 @@
+v1.3.0 发布日期：2024-11-27
+----
+add RestSrvServiceClient
+
 v1.2.1 发布日期：2024-07-03
 ----
 fix #{var} in strings is deprecated
