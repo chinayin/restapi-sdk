@@ -7,6 +7,7 @@ use RestAPI\RestAPIException;
 use RestAPI\RestPayServiceClient;
 use RestAPI\RestServiceClient;
 use RestAPI\RestPythonServiceClient;
+use RestAPI\RestSrvServiceClient;
 
 // srvapi
 function RestServiceClientInitialize($headers = [])
@@ -213,4 +214,54 @@ function RestPythonServiceBuildRequestUrl($path): string
 {
     RestPythonServiceClientInitialize([]);
     return RestPythonServiceClient::buildRequestUrl($path);
+}
+
+
+// srv
+function RestSrvServiceClientInitialize($headers = [])
+{
+    RestSrvServiceClient::initialize(
+        Helper::getEnv('restapi.sys_id'),
+        Helper::getEnv('restapi.secret_key'),
+        Helper::getEnv('restapi.region')
+    );
+    // timeout
+    if (!empty($headers['timeout'])) {
+        RestSrvServiceClient::setTimeout($headers['timeout']);
+        unset($headers['timeout']);
+    }
+    // server_url
+    $serverUrl = Helper::getEnv('restapi.server_url');
+    if (!empty($serverUrl)) {
+        RestSrvServiceClient::setServerUrl($serverUrl);
+    }
+}
+
+/**
+ * @throws RestAPIException
+ */
+function SrvServiceClientGet($path, $params = null, array $headers = []): array
+{
+    RestSrvServiceClientInitialize($headers);
+    return RestSrvServiceClient::get($path, $params, $headers);
+}
+
+/**
+ * @throws RestAPIException
+ */
+function SrvServiceClientPost($path, $params, array $headers = []): array
+{
+    RestSrvServiceClientInitialize($headers);
+    return RestSrvServiceClient::post($path, $params, $headers);
+}
+
+/**
+ * @param $path
+ *
+ * @return string
+ */
+function RestSrvServiceBuildRequestUrl($path): string
+{
+    RestSrvServiceClientInitialize([]);
+    return RestSrvServiceClient::buildRequestUrl($path);
 }
