@@ -9,6 +9,7 @@ class RouterPythonService
     public const IV_KEY = 'iv';
     public const IS_PRIVATE_ZONE_KEY = 'is_private_zone';
     public const CONST_IS_PRIVATE_ZONE_SERVER = 'DEPLOY_IS_VPC_ZONE';
+    public const CONST_DEPLOY_CLOUD_ID = 'DEPLOY_CLOUD_ID';
     private static $INSTANCES;
     private $sysId;
     private $region;
@@ -24,6 +25,7 @@ class RouterPythonService
         Region::CN => 'srvapi.[domain].local',
         Region::TESTING => 'srvapi.[domain]-test.local',
         Region::UAT => 'srvapi.[domain]-uat.local',
+        Region::US => 'srvapi.[domain]-us.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -31,6 +33,7 @@ class RouterPythonService
         Region::TESTING => '[iv]',
         Region::UAT => '[iv]',
         Region::CN => '[iv]',
+        Region::US => '[iv]',
     ];
 
     private function __construct($sysId)
@@ -111,6 +114,11 @@ class RouterPythonService
         $isPrivateZoneServer = $isPrivateZoneServer ? true : false;
         if ($isPrivateZoneServer && isset(self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region])) {
             $host = self::$DEFAULT_LOCAL_REGION_ROUTE[$this->region];
+            // 区分alicloud和aws的内网差异
+            $cloudId = getenv(self::CONST_DEPLOY_CLOUD_ID);
+            if (!empty($cloudId) && $cloudId === 'aws') {
+                $host = str_replace('.local', '.internal', $host);
+            }
         }
         // 替换变量
         $host = str_replace('[domain]', Domain::getMainDomain(), $host);

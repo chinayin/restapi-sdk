@@ -1,3 +1,7 @@
+v1.4.0 发布日期：2025-03-19
+----
+add aws cloud support
+
 v1.3.0 发布日期：2024-11-27
 ----
 add RestSrvServiceClient

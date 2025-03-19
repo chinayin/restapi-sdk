@@ -17,7 +17,7 @@ class RestPayServiceClient
     /**
      * Client version.
      */
-    public const VERSION = 'v1.3.0';
+    public const VERSION = 'v1.4.0';
 
     /**
      * Is in production or not.
