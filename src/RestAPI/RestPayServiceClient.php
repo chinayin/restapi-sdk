@@ -387,6 +387,11 @@ class RestPayServiceClient
         // 2020-12-23 返回 response_header, 如果不为 true, 只会获得响应的正文
         curl_setopt($req, CURLOPT_HEADER, true);
         curl_setopt($req, CURLOPT_ENCODING, '');
+        /**
+         * 2025-04-01 阿里云ack环境中coredns解析ipv6报错
+         * @url https://help.aliyun.com/zh/ack/ack-managed-and-ack-dedicated/user-guide/dns-troubleshooting-1
+         */
+        curl_setopt($req, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         switch ($method) {
             case 'GET':
                 if ($data) {
