@@ -1,3 +1,7 @@
+v1.4.1 发布日期：2025-04-01
+----
+add curl_setopt CURLOPT_IPRESOLVE
+
 v1.4.0 发布日期：2025-03-19
 ----
 add aws cloud support
