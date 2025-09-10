@@ -26,6 +26,7 @@ class RouterPayService
         Region::TESTING => 'payapi.[domain]-test.local',
         Region::UAT => 'payapi.[domain]-uat.local',
         Region::US => 'payapi.[domain]-us.local',
+        Region::SG => 'payapi.[domain]-sg.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -34,6 +35,7 @@ class RouterPayService
         Region::UAT => '[iv]',
         Region::CN => '[iv]',
         Region::US => '[iv]',
+        Region::SG => '[iv]',
     ];
 
     private function __construct($sysId)

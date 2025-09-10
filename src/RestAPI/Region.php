@@ -16,6 +16,7 @@ abstract class Region
     public const HK = 12;
     public const US = 13;
     public const UK = 14;
+    public const SG = 15;
 
     /**
      * Create region from name, such as `CN`, `HK`.

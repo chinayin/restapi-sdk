@@ -22,6 +22,7 @@ class Router
         Region::HK => 'ssoapi-hk.[domain].com',
         Region::US => 'ssoapi-us.[domain].com',
         Region::UK => 'ssoapi-uk.[domain].com',
+        Region::SG => 'ssoapi-sg.[domain].com',
     ];
 
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
@@ -32,6 +33,7 @@ class Router
         Region::HK => 'ssoapi.[domain]-hk.local',
         Region::UK => 'ssoapi.[domain]-uk.local',
         Region::US => 'ssoapi.[domain]-us.local',
+        Region::SG => 'ssoapi.[domain]-sg.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -42,6 +44,7 @@ class Router
         Region::HK => '[iv]',
         Region::US => '[iv]',
         Region::UK => '[iv]',
+        Region::SG => '[iv]',
     ];
 
     private function __construct($sysId)

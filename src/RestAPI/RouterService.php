@@ -19,6 +19,7 @@ class RouterService
         Region::HK => 'srvapi-hk.[domain].com',
         Region::US => 'srvapi-us.[domain].com',
         Region::UK => 'srvapi-uk.[domain].com',
+        Region::SG => 'srvapi-sg.[domain].com',
     ];
     private static $DEFAULT_LOCAL_REGION_ROUTE = [
         Region::CN => 'srvapi.[domain].local',
@@ -28,6 +29,7 @@ class RouterService
         Region::HK => 'srvapi.[domain]-hk.local',
         Region::UK => 'srvapi.[domain]-uk.local',
         Region::US => 'srvapi.[domain]-us.local',
+        Region::SG => 'srvapi.[domain]-sg.local',
     ];
     private static $DEFAULT_REGION_IV = [
         Region::DEV => '[iv]',
@@ -37,6 +39,7 @@ class RouterService
         Region::HK => '[iv]',
         Region::US => '[iv]',
         Region::UK => '[iv]',
+        Region::SG => '[iv]',
     ];
     private $sysId;
     private $region;

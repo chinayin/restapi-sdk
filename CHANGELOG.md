@@ -1,3 +1,7 @@
+v1.4.2 发布日期：2025-09-10
+----
+add REGION:SG
+
 v1.4.1 发布日期：2025-04-01
 ----
 add curl_setopt CURLOPT_IPRESOLVE

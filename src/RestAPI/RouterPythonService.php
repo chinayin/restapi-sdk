@@ -26,6 +26,7 @@ class RouterPythonService
         Region::TESTING => 'srvapi.[domain]-test.local',
         Region::UAT => 'srvapi.[domain]-uat.local',
         Region::US => 'srvapi.[domain]-us.local',
+        Region::SG => 'srvapi.[domain]-sg.local',
     ];
 
     private static $DEFAULT_REGION_IV = [
@@ -34,6 +35,7 @@ class RouterPythonService
         Region::UAT => '[iv]',
         Region::CN => '[iv]',
         Region::US => '[iv]',
+        Region::SG => '[iv]',
     ];
 
     private function __construct($sysId)
